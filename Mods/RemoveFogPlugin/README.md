@@ -19,7 +19,10 @@ You will need to add references to:
 
 ```
 * BepInEx.dll  (Download from the BepInEx project.)
-* UnityEngine.InputLegacyModule.dll (found in Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed)
+* Bouncyrock.TaleSpire.Runtime (found in Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed)
+* UnityEngine.dll
+* UnityEngine.CoreModule.dll
+* UnityEngine.InputLegacyModule.dll 
 * Unity.Postprocessing.Runtime.dll
 ```
 
