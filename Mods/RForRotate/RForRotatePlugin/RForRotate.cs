@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RForRotate
 {
-    [BepInPlugin("org.d20armyknife.plugins.rforrotate", "Press R to Rotate Plug-In", "1.0.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.rforrotate", "Press R to Rotate Plug-In", "1.1.0.0")]
     [BepInProcess("TaleSpire.exe")]
     public class RForRotatePlugin: BaseUnityPlugin
     {
@@ -13,6 +13,8 @@ namespace RForRotate
         void Awake()
         {
             UnityEngine.Debug.Log("R For Rotate Plug-in loaded");
+            // Set the UsingCodeInjection so we don't anger the @Baggers
+            AppStateManager.UsingCodeInjection = true;
         }
         
         private void RotateSelected(double amount)
@@ -36,6 +38,12 @@ namespace RForRotate
                     float heightPlaneOffset = (float)btm.GetType().GetField("heightPlaneOffset", flags).GetValue(btm);
                     heightPlaneOffset -= (float)((double)Input.mouseScrollDelta.y * (double)Time.deltaTime * 8.0);
                     btm.GetType().GetField("heightPlaneOffset", flags).SetValue(btm, heightPlaneOffset);
+                }
+                if (SingletonBehaviour<BoardToolManager>.HasInstance && (SingletonBehaviour<BoardToolManager>.Instance.IsCurrentTool<SlabBuilderBoardTool>()))
+                {
+                    var sbbt = (SlabBuilderBoardTool)SingletonBehaviour<SlabBuilderBoardTool>.Instance;
+                    Slab slab = (Slab)sbbt.GetType().GetField("_slab", flags).GetValue(sbbt);
+                    slab.Rotate90();
                 }
             }
             catch (System.Exception ex)

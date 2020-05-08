@@ -40,8 +40,9 @@
     <Reference Include="Bouncyrock.TaleSpire.BounceTools.Runtime">
       <HintPath>..\..\..\..\..\RemoveFogPlugin\Libs\Bouncyrock.TaleSpire.BounceTools.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Bouncyrock.TaleSpire.Runtime">
-      <HintPath>..\..\..\..\..\RemoveFogPlugin\Libs\Bouncyrock.TaleSpire.Runtime.dll</HintPath>
+    <Reference Include="Bouncyrock.TaleSpire.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,6 +68,7 @@
   <ItemGroup>
     <Compile Include="RForRotate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetInjectionFlag.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
