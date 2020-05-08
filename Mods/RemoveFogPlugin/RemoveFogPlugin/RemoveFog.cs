@@ -5,7 +5,7 @@ using UnityEngine.Rendering.PostProcessing;
 
 namespace RemoveFogPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removefog", "Remove Fog Plug-In", "1.0.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.removefog", "Remove Fog Plug-In", "1.1.0.0")]
     [BepInProcess("TaleSpire.exe")]
     public class DefogIt: BaseUnityPlugin
     {
@@ -14,6 +14,8 @@ namespace RemoveFogPlugin
         void Awake()
         {
             UnityEngine.Debug.Log("Remove Fog Plug-in loaded");
+            // Set the UsingCodeInjection so we don't anger the @Baggers
+            AppStateManager.UsingCodeInjection = true;
         }
 
         private void ToggleFog()

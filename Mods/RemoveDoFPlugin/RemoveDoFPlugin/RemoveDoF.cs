@@ -7,7 +7,7 @@ using UnityEngine.Rendering.PostProcessing;
 
 namespace RemoveDoFPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.0.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.1.0.0")]
     [BepInProcess("TaleSpire.exe")]
     public class DeDoFIt: BaseUnityPlugin
     {
@@ -16,6 +16,8 @@ namespace RemoveDoFPlugin
         void Awake()
         {
             UnityEngine.Debug.Log("Remove Depth of Field Plug-in loaded");
+            // Set the UsingCodeInjection so we don't anger the @Baggers
+            AppStateManager.UsingCodeInjection = true;
         }
         
         private void ToggleDoF()
