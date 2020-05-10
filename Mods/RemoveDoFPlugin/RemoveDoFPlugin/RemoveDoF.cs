@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Reflection;
 using BepInEx;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.SceneManagement;
 
 namespace RemoveDoFPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.1.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.2.0.0")]
     [BepInProcess("TaleSpire.exe")]
     public class DeDoFIt: BaseUnityPlugin
     {
@@ -44,7 +46,32 @@ namespace RemoveDoFPlugin
                 UnityEngine.Debug.Log(ex.Source);
             }
         }
+        void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
 
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            UnityEngine.Debug.Log("Loading Scene: " + scene.name);
+            TextMeshProUGUI[] texts = FindObjectsOfType<TextMeshProUGUI>();
+            for (int i = 0; i < texts.Length; i++)
+            {
+                if (scene.name == "UI" && texts[i].name == "BETA")
+                {
+                    texts[i].text = "INJECTED BUILD - unstable mods";
+                }
+                if (scene.name == "Login" && texts[i].name == "TextMeshPro Text")
+                {
+                    BepInPlugin bepInPlugin = (BepInPlugin)Attribute.GetCustomAttribute(this.GetType(), typeof(BepInPlugin));
+                    if (texts[i].text.EndsWith("</size>"))
+                    {
+                        texts[i].text += "\n\nMods Currently Installed:\n";
+                    }
+                    texts[i].text += "\n" + bepInPlugin.Name + " - " + bepInPlugin.Version;
+                }
+            }
+        }
         void Update()
         {
             if (Input.GetKeyUp(KeyCode.H))
