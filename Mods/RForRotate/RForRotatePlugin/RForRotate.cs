@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using BepInEx;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace RForRotate
 {
-    [BepInPlugin("org.d20armyknife.plugins.rforrotate", "Press R to Rotate Plug-In", "1.1.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.rforrotate", "Press R to Rotate Plug-In", "1.1.1.0")]
     [BepInProcess("TaleSpire.exe")]
     public class RForRotatePlugin: BaseUnityPlugin
     {
@@ -56,7 +59,32 @@ namespace RForRotate
             }
         }
 
+        void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
 
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            UnityEngine.Debug.Log("Loading Scene: " + scene.name);
+            TextMeshProUGUI[] texts = FindObjectsOfType<TextMeshProUGUI>();
+            for (int i = 0; i < texts.Length; i++)
+            {
+                if (scene.name == "UI" && texts[i].name == "BETA")
+                {
+                    texts[i].text = "INJECTED BUILD - unstable mods";
+                }
+                if (scene.name == "Login" && texts[i].name == "TextMeshPro Text")
+                {
+                    BepInPlugin bepInPlugin = (BepInPlugin)Attribute.GetCustomAttribute(this.GetType(), typeof(BepInPlugin));
+                    if (texts[i].text.EndsWith("</size>"))
+                    {
+                        texts[i].text += "\n\nMods Currently Installed:\n";
+                    }
+                    texts[i].text += "\n" + bepInPlugin.Name + " - " + bepInPlugin.Version;
+                }
+            }
+        }
         void Update()
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Mouse ScrollWheel") > 0)
