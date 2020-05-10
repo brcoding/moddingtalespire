@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveFogPlugin", "Mods\Rem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveDoFPlugin", "Mods\RemoveDoFPlugin\RemoveDoFPlugin\RemoveDoFPlugin.csproj", "{A7B3E30D-3E45-4BEE-A598-AC29807891EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraToolsPlugin", "TalespireModding\Mods\CameraToolsPlugin\CameraToolsPlugin\CameraToolsPlugin.csproj", "{461CF153-4423-4BC2-B10D-0DB24D5B6E1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleCharacterNames", "TalespireModding\Mods\ToggleCharacterNames\ToggleCharacterNames.csproj", "{0FA94683-146E-4EAC-95A3-CCAF9933065D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{A7B3E30D-3E45-4BEE-A598-AC29807891EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7B3E30D-3E45-4BEE-A598-AC29807891EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7B3E30D-3E45-4BEE-A598-AC29807891EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{461CF153-4423-4BC2-B10D-0DB24D5B6E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{461CF153-4423-4BC2-B10D-0DB24D5B6E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{461CF153-4423-4BC2-B10D-0DB24D5B6E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{461CF153-4423-4BC2-B10D-0DB24D5B6E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FA94683-146E-4EAC-95A3-CCAF9933065D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FA94683-146E-4EAC-95A3-CCAF9933065D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FA94683-146E-4EAC-95A3-CCAF9933065D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FA94683-146E-4EAC-95A3-CCAF9933065D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

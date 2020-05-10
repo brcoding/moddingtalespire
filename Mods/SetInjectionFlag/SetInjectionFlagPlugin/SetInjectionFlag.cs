@@ -2,6 +2,7 @@
 using System;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine;
 
 namespace PluginUtilities
 {
