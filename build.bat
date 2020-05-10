@@ -24,6 +24,7 @@ REM COMPILE EXTERNAL MODS
 msbuild.exe TmpTaleSpireModding\TalespireModding.sln /t:Build /p:Configuration=Release -property:ReferencePath=%refpath%
 copy TmpTaleSpireModding\Mods\CameraToolsPlugin\CameraToolsPlugin\bin\Release\CameraToolsPlugin.dll build\
 copy TmpTaleSpireModding\Mods\ToggleCharacterNames\bin\Release\ToggleCharacterNames.dll build\
+copy TmpTaleSpireModding\Mods\SwitchCharacters\bin\Release\SwitchCharacters.dll build\
 
 rmdir TmpTaleSpireModding\ /s /q
 
@@ -54,6 +55,10 @@ del tmp\BepInEx\plugins\ToggleCharacterNames.dll
 copy build\CameraToolsPlugin.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\CameraToolsPlugin-Full.zip
 del tmp\BepInEx\plugins\CameraToolsPlugin.dll
+
+copy build\SwitchCharacters.dll tmp\BepInEx\plugins\
+powershell Compress-Archive tmp\* build\SwitchCharacters-Full.zip
+del tmp\BepInEx\plugins\SwitchCharacters.dll
 
 copy build\*.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\AllPlugins-Full.zip
