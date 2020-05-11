@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModdingUtils.cs" />
     <Compile Include="RemoveDoF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
