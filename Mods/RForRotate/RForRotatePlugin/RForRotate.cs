@@ -16,8 +16,7 @@ namespace RForRotate
         void Awake()
         {
             UnityEngine.Debug.Log("R For Rotate Plug-in loaded");
-            // Set the UsingCodeInjection so we don't anger the @Baggers
-            AppStateManager.UsingCodeInjection = true;
+            ModdingTales.ModdingUtils.Initialize(this);
         }
         
         private void RotateSelected(double amount)
@@ -59,32 +58,6 @@ namespace RForRotate
             }
         }
 
-        void OnEnable()
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            UnityEngine.Debug.Log("Loading Scene: " + scene.name);
-            TextMeshProUGUI[] texts = FindObjectsOfType<TextMeshProUGUI>();
-            for (int i = 0; i < texts.Length; i++)
-            {
-                if (scene.name == "UI" && texts[i].name == "BETA")
-                {
-                    texts[i].text = "INJECTED BUILD - unstable mods";
-                }
-                if (scene.name == "Login" && texts[i].name == "TextMeshPro Text")
-                {
-                    BepInPlugin bepInPlugin = (BepInPlugin)Attribute.GetCustomAttribute(this.GetType(), typeof(BepInPlugin));
-                    if (texts[i].text.EndsWith("</size>"))
-                    {
-                        texts[i].text += "\n\nMods Currently Installed:\n";
-                    }
-                    texts[i].text += "\n" + bepInPlugin.Name + " - " + bepInPlugin.Version;
-                }
-            }
-        }
         void Update()
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Mouse ScrollWheel") > 0)

@@ -1,8 +1,4 @@
 ﻿using BepInEx;
-using System;
-using TMPro;
-using UnityEngine.SceneManagement;
-using UnityEngine;
 
 namespace PluginUtilities
 {
@@ -13,33 +9,8 @@ namespace PluginUtilities
         void Awake()
         {
             UnityEngine.Debug.Log("SetInjectionFlag Plug-in loaded");
-            AppStateManager.UsingCodeInjection = true;
+            ModdingTales.ModdingUtils.Initialize(this);
         }
-        void OnEnable()
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            UnityEngine.Debug.Log("Loading Scene: " + scene.name);
-            TextMeshProUGUI[] texts = FindObjectsOfType<TextMeshProUGUI>();
-            for (int i = 0; i < texts.Length; i++)
-            {
-                if (scene.name == "UI" && texts[i].name == "BETA")
-                {
-                    texts[i].text = "INJECTED BUILD - unstable mods";
-                }
-                if (scene.name == "Login" && texts[i].name == "TextMeshPro Text")
-                {
-                    BepInPlugin bepInPlugin = (BepInPlugin)Attribute.GetCustomAttribute(this.GetType(), typeof(BepInPlugin));
-                    if (texts[i].text.EndsWith("</size>"))
-                    {
-                        texts[i].text += "\n\nMods Currently Installed:\n";
-                    }
-                    texts[i].text += "\n" + bepInPlugin.Name + " - " + bepInPlugin.Version;
-                }
-            }
-        }
+       
     }
 }

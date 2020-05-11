@@ -34,6 +34,14 @@
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\..\RemoveFogPlugin\Libs\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="Bouncyrock.BouncePackage.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.BouncePackage.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Bouncyrock.TaleSpire.BounceTools.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.BounceTools.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="Bouncyrock.TaleSpire.Runtime">
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.Runtime.dll</HintPath>
     </Reference>
@@ -65,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModdingUtils.cs" />
     <Compile Include="RemoveFog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
