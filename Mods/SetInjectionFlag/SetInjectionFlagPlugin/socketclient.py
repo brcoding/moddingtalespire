@@ -34,18 +34,17 @@ def SetCreatureStat(creatureId, statNumber, current, max):
     return json.loads(ExecuteRemoteFunction('SetCreatureStat {0},{1},{2},{3}'.format(creatureId, statNumber - 1, current, max)))
 
 def PlayEmote(creatureId, emote):
-    ExecuteRemoteFunction('PlayEmote {0},{1}'.format(creatureId, emote))
+    return json.loads(ExecuteRemoteFunction('PlayEmote {0},{1}'.format(creatureId, emote)))
 
 creature_id = ""
 for creature in GetCreatureList():
-    #print("Alias: {0} Position: {1} Rotation: {2}".format(creature['Alias'], creature['Position'], creature['Rotation']))
-    print("Alias: {0} Id: {1}".format(creature['Alias'], creature['CreatureId']))
+    print("Alias: {0} Position: {1} Rotation: {2}".format(creature['Alias'], creature['Position'], creature['Rotation']))
+    #print("Alias: {0} Id: {1}".format(creature['Alias'], creature['CreatureId']))
     if creature['Alias'] == 'Barf':
         creature_id = creature['CreatureId']
 
 #TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
 PlayEmote(creature_id, "TLA_Action_Knockdown")
-
 sleep(2)
 PlayEmote(creature_id, "TLA_MeleeAttack")
 sleep(2)

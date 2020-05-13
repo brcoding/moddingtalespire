@@ -255,14 +255,12 @@ namespace ModdingTales
             {
                 Creature creature = creatureBoardAsset.Creature;
                 creature.PlayEmote(emote);
-                return "Wiggled";
+                return new APIResponse("Emote successful").ToString(); ;
             }
             else
             {
-                return "not";
+                return new APIResponse("Failed to emote").ToString();
             }
-            //TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
-            //.GetComponent<Creature>().PlayEmote(obj as string);
         }
         private static string SetCreatureStat(string[] input)
         {
