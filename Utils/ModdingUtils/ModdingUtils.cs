@@ -12,9 +12,101 @@ using System.Text;
 using Bounce.Unmanaged;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using DataModel;
+using Newtonsoft.Json.Serialization;
+using Unity.Mathematics;
 
 namespace ModdingTales
 {
+    public class PlayerControlled
+    {
+        public string Alias { get; set; }
+    }
+    public class APIError
+    {
+        public APIError(string message)
+        {
+            Message = message;
+        }
+        public APIError(string errorMessage, string message)
+        {
+            Message = message;
+            ErrorMessage = errorMessage;
+        }
+
+        public string ErrorMessage { get; set; }
+        public string Message { get; set; }
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+    }
+    public class PropertyRenameAndIgnoreSerializerContractResolver : DefaultContractResolver
+    {
+        private readonly Dictionary<Type, HashSet<string>> _ignores;
+        private readonly Dictionary<Type, Dictionary<string, string>> _renames;
+
+        public PropertyRenameAndIgnoreSerializerContractResolver()
+        {
+            _ignores = new Dictionary<Type, HashSet<string>>();
+            _renames = new Dictionary<Type, Dictionary<string, string>>();
+        }
+
+        public void IgnoreProperty(Type type, params string[] jsonPropertyNames)
+        {
+            if (!_ignores.ContainsKey(type))
+                _ignores[type] = new HashSet<string>();
+
+            foreach (var prop in jsonPropertyNames)
+                _ignores[type].Add(prop);
+        }
+
+        public void RenameProperty(Type type, string propertyName, string newJsonPropertyName)
+        {
+            if (!_renames.ContainsKey(type))
+                _renames[type] = new Dictionary<string, string>();
+
+            _renames[type][propertyName] = newJsonPropertyName;
+        }
+
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            var property = base.CreateProperty(member, memberSerialization);
+
+            if (IsIgnored(property.DeclaringType, property.PropertyName))
+            {
+                property.ShouldSerialize = i => false;
+                property.Ignored = true;
+            }
+
+            if (IsRenamed(property.DeclaringType, property.PropertyName, out var newJsonPropertyName))
+                property.PropertyName = newJsonPropertyName;
+
+            return property;
+        }
+
+        private bool IsIgnored(Type type, string jsonPropertyName)
+        {
+            if (!_ignores.ContainsKey(type))
+                return false;
+
+            return _ignores[type].Contains(jsonPropertyName);
+        }
+
+        private bool IsRenamed(Type type, string jsonPropertyName, out string newJsonPropertyName)
+        {
+            Dictionary<string, string> renames;
+
+            if (!_renames.TryGetValue(type, out renames) || !renames.TryGetValue(jsonPropertyName, out newJsonPropertyName))
+            {
+                newJsonPropertyName = null;
+                return false;
+            }
+
+            return true;
+        }
+    }
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
@@ -28,6 +120,7 @@ namespace ModdingTales
             Commands.Add("SelectNextPlayerControlled", SelectNextPlayerControlled);
             Commands.Add("SelectPlayerControlledByName", SelectPlayerControlledByName);
             Commands.Add("GetPlayerControlledList", GetPlayerControlledList);
+            Commands.Add("GetCreatureList", GetCreatureList);
         }
         static string ExecuteCommand(string command)
         {
@@ -42,7 +135,7 @@ namespace ModdingTales
             }
             catch
             {
-                return "ERROR: Unknown command";
+                return new APIError("Unknown command").ToString();
             }
         }
         private static void StartSocketServer()
@@ -102,29 +195,103 @@ namespace ModdingTales
         {
             return GetPlayerControlledList();
         }
+ 
+        public struct CustomCreatureData
+        {
+
+            public string BoardAssetId;
+            public string CreatureId;
+            public string UniqueId;
+            public Vector3 Position;
+            public Quaternion Rotation;
+            public string Alias;
+            public string AvatarThumbnailUrl;
+            public Color[] Colors;
+            public CreatureStat Hp;
+            public string Inventory;
+            public CreatureStat Stat0;
+            public CreatureStat Stat1;
+            public CreatureStat Stat2;
+            public CreatureStat Stat3;
+            public bool TorchState;
+            public bool ExplicitlyHidden;
+        }
+
+        private static CustomCreatureData convertCreatureData(CreatureData cd)
+        {
+            // This is because NGuid does not serialize nicely
+            CustomCreatureData ccd = new CustomCreatureData();
+            ccd.Alias = cd.Alias;
+            ccd.BoardAssetId = cd.BoardAssetId.ToString();
+            ccd.CreatureId = cd.CreatureId.ToString();
+            ccd.UniqueId = cd.UniqueId.ToString();
+            ccd.Position = cd.Position;
+            ccd.Rotation = cd.Rotation;
+            ccd.Alias = cd.Alias;
+            ccd.AvatarThumbnailUrl = cd.AvatarThumbnailUrl;
+            ccd.Colors = cd.Colors;
+            ccd.Hp = cd.Hp;
+            ccd.Inventory = cd.Inventory;
+            ccd.Stat0 = cd.Stat0;
+            ccd.Stat1 = cd.Stat1;
+            ccd.Stat2 = cd.Stat2;
+            ccd.Stat3 = cd.Stat3;
+            ccd.TorchState = cd.TorchState;
+            ccd.ExplicitlyHidden = cd.ExplicitlyHidden;
+            return ccd;
+        }
+
+        private static string GetCreatureList(string[] input)
+        {
+            return GetCreatureList();
+        }
+        public static string GetCreatureList()
+        {
+            try
+            {
+                List<CustomCreatureData> allCreatures = new List<CustomCreatureData>();
+
+                var board = BoardSessionManager.Board;
+                var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+
+                Dictionary<NGuid, CreatureData> creatures = (Dictionary<NGuid, CreatureData>)board.GetType().GetField("_creatures", flags).GetValue(board);
+                foreach (KeyValuePair<NGuid, CreatureData> entry in creatures)
+                {
+                    allCreatures.Add(convertCreatureData(entry.Value));
+                }
+
+                return JsonConvert.SerializeObject(allCreatures);
+            }
+            catch (Exception ex)
+            {
+                return new APIError(ex.Message + ex.StackTrace, "Could not get creature list").ToString();
+            }
+        }
+
         public static string GetPlayerControlledList()
         {
             try
             {
-                List<string> aliases = new List<string>();
+                List<CustomCreatureData> playerControlled = new List<CustomCreatureData>();
                 NGuid[] creatureIds;
+
                 if (BoardSessionManager.Board.TryGetPlayerOwnedCreatureIds(LocalPlayer.Id.Value, out creatureIds))
                 {
-                    //int i = 0;
                     for (int i=0;i < creatureIds.Length;i++)
                     {
-                        aliases.Add(BoardSessionManager.Board.GetCreatureData(creatureIds[i]).Alias);
+                        playerControlled.Add(convertCreatureData(BoardSessionManager.Board.GetCreatureData(creatureIds[i])));
                     }
-                    return string.Join("|", aliases.ToArray());
+
+                    return JsonConvert.SerializeObject(playerControlled);
                 }
                 else
                 {
-                    return "";
+                    return "[]";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return "ERROR: Could not get player controlled list";
+                return new APIError(ex.Message + ex.StackTrace, "Could not get player controlled list").ToString();
             }
         }
 
@@ -167,7 +334,7 @@ namespace ModdingTales
             }
             catch (Exception)
             {
-                return "ERROR: Unable to select by alias: " + alias;
+                return new APIError("Unable to select by alias: " + alias).ToString();
             }
         }
 
@@ -217,7 +384,7 @@ namespace ModdingTales
                 }
             } catch (Exception)
             {
-                return "ERROR: Unable to select next.";
+                return new APIError("Unable to select next.").ToString();
             }
         }
 
