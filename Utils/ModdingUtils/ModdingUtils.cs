@@ -23,13 +23,13 @@ namespace ModdingTales
     {
         public string Alias { get; set; }
     }
-    public class APIError
+    public class APIResponse
     {
-        public APIError(string message)
+        public APIResponse(string message)
         {
             Message = message;
         }
-        public APIError(string errorMessage, string message)
+        public APIResponse(string errorMessage, string message)
         {
             Message = message;
             ErrorMessage = errorMessage;
@@ -118,9 +118,12 @@ namespace ModdingTales
         static ModdingUtils()
         {
             Commands.Add("SelectNextPlayerControlled", SelectNextPlayerControlled);
-            Commands.Add("SelectPlayerControlledByName", SelectPlayerControlledByName);
+            Commands.Add("SelectPlayerControlledByAlias", SelectPlayerControlledByAlias);
             Commands.Add("GetPlayerControlledList", GetPlayerControlledList);
             Commands.Add("GetCreatureList", GetCreatureList);
+            Commands.Add("SetCreatureHp", SetCreatureHp);
+            Commands.Add("SetCreatureStat", SetCreatureStat);
+            Commands.Add("PlayEmote", PlayEmote);
         }
         static string ExecuteCommand(string command)
         {
@@ -135,7 +138,7 @@ namespace ModdingTales
             }
             catch
             {
-                return new APIError("Unknown command").ToString();
+                return new APIResponse("Failed to find command", "Unknown command").ToString();
             }
         }
         private static void StartSocketServer()
@@ -240,6 +243,72 @@ namespace ModdingTales
             ccd.ExplicitlyHidden = cd.ExplicitlyHidden;
             return ccd;
         }
+        private static string PlayEmote(string[] input)
+        {
+            return PlayEmote(input[0], input[1]);
+        }
+
+        private static string PlayEmote(string creatureId, string emote)
+        {
+            CreatureBoardAsset creatureBoardAsset;
+            if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(creatureId), out creatureBoardAsset))
+            {
+                Creature creature = creatureBoardAsset.Creature;
+                creature.PlayEmote(emote);
+                return "Wiggled";
+            }
+            else
+            {
+                return "not";
+            }
+            //TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
+            //.GetComponent<Creature>().PlayEmote(obj as string);
+        }
+        private static string SetCreatureStat(string[] input)
+        {
+            return SetCreatureStat(input[0], input[1], input[2], input[3]);
+        }
+        public static string SetCreatureStat(string creatureId, string statIdx, string current, string max)
+        {
+            try
+            {
+                List<CustomCreatureData> allCreatures = new List<CustomCreatureData>();
+
+                var board = BoardSessionManager.Board;
+                var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+
+                board.SetCreatureStatByIndex(new NGuid(creatureId), new CreatureStat(float.Parse(current), float.Parse(max)), int.Parse(statIdx));
+                SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureMenuBoardTool>().CallUpdate();
+                return new APIResponse(String.Format("Set stat{0} to {1}:{2} for {3}", statIdx, current, max, creatureId)).ToString();
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse(ex.Message + ex.StackTrace, "Could not set stat").ToString();
+            }
+        }
+
+        private static string SetCreatureHp(string[] input)
+        {
+            return SetCreatureHp(input[0], input[1], input[2]);
+        }
+        public static string SetCreatureHp(string creatureId, string currentHp, string maxHp)
+        {
+            try
+            {
+                List<CustomCreatureData> allCreatures = new List<CustomCreatureData>();
+
+                var board = BoardSessionManager.Board;
+                var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+
+                board.SetCreatureStatByIndex(new NGuid(creatureId), new CreatureStat(float.Parse(currentHp), float.Parse(maxHp)), -1);
+                SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureMenuBoardTool>().CallUpdate();
+                return new APIResponse(String.Format("Set HP to {0}:{1} for {2}", currentHp, maxHp, creatureId)).ToString();
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse(ex.Message + ex.StackTrace, "Could not set hp").ToString();
+            }
+        }
 
         private static string GetCreatureList(string[] input)
         {
@@ -264,7 +333,7 @@ namespace ModdingTales
             }
             catch (Exception ex)
             {
-                return new APIError(ex.Message + ex.StackTrace, "Could not get creature list").ToString();
+                return new APIResponse(ex.Message + ex.StackTrace, "Could not get creature list").ToString();
             }
         }
 
@@ -291,16 +360,16 @@ namespace ModdingTales
             }
             catch (Exception ex)
             {
-                return new APIError(ex.Message + ex.StackTrace, "Could not get player controlled list").ToString();
+                return new APIResponse(ex.Message + ex.StackTrace, "Could not get player controlled list").ToString();
             }
         }
 
-        private static string SelectPlayerControlledByName(string[] input)
+        private static string SelectPlayerControlledByAlias(string[] input)
         {
-            return SelectPlayerControlledByName(input[0]);
+            return SelectPlayerControlledByAlias(input[0]);
         }
 
-        public static string SelectPlayerControlledByName(string alias)
+        public static string SelectPlayerControlledByAlias(string alias)
         {
             try
             {
@@ -329,12 +398,12 @@ namespace ModdingTales
                 }
                 else
                 {
-                    return "";
+                    return "[]";
                 }
             }
             catch (Exception)
             {
-                return new APIError("Unable to select by alias: " + alias).ToString();
+                return new APIResponse("Failed to find alias", "Unable to select by alias: " + alias).ToString();
             }
         }
 
@@ -382,9 +451,9 @@ namespace ModdingTales
                 {
                     return "";
                 }
-            } catch (Exception)
+            } catch (Exception ex)
             {
-                return new APIError("Unable to select next.").ToString();
+                return new APIResponse(ex.Message, "Unable to select next.").ToString();
             }
         }
 

@@ -1,5 +1,5 @@
 import socket
-import time
+from time import sleep
 import json
 
 def ExecuteRemoteFunction(command):
@@ -11,14 +11,50 @@ def ExecuteRemoteFunction(command):
     return s.recv(24576).decode('utf-8')
     s.close()
 
-# while(1):
-creature_list = json.loads(ExecuteRemoteFunction('GetCreatureList'))
+# Retrieves all creatures on the current board
+def GetCreatureList():
+    return json.loads(ExecuteRemoteFunction('GetCreatureList'))
 
-for creature in creature_list:
-    print("Alias: {0} Position: {1} Rotation: {2}".format(creature['Alias'], creature['Position'], creature['Rotation']))
-# print("Got alias list {0}".format(alias_list))
-    # for alias in alias_list:
-    #     print("Selecting: {0}".format(alias))
-    #     ExecuteRemoteFunction('SelectPlayerControlledByName ' + alias)
-    #     time.sleep(2)
+# Gets all creatures controlled by the current player
+def GetPlayerControlledList():
+    return json.loads(ExecuteRemoteFunction('GetPlayerControlledList'))
 
+# Selects and focuses on a player controlled by alias name
+def SelectPlayerControlledByAlias(alias):
+    return json.loads(ExecuteRemoteFunction('SelectPlayerControlledByAlias {0}'.format(alias)))
+
+# Selects and focuses the next player controlled creature
+def SelectNextPlayerControlled(alias):
+    return json.loads(ExecuteRemoteFunction('SelectNextPlayerControlled'))
+
+def SetCreatureHp(creatureId, currentHp, maxHp):
+    return json.loads(ExecuteRemoteFunction('SetCreatureHp {0},{1},{2}'.format(creatureId, currentHp, maxHp)))
+
+def SetCreatureStat(creatureId, statNumber, current, max):
+    return json.loads(ExecuteRemoteFunction('SetCreatureStat {0},{1},{2},{3}'.format(creatureId, statNumber - 1, current, max)))
+
+def PlayEmote(creatureId, emote):
+    ExecuteRemoteFunction('PlayEmote {0},{1}'.format(creatureId, emote))
+
+creature_id = ""
+for creature in GetCreatureList():
+    #print("Alias: {0} Position: {1} Rotation: {2}".format(creature['Alias'], creature['Position'], creature['Rotation']))
+    print("Alias: {0} Id: {1}".format(creature['Alias'], creature['CreatureId']))
+    if creature['Alias'] == 'Barf':
+        creature_id = creature['CreatureId']
+
+#TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
+PlayEmote(creature_id, "TLA_Action_Knockdown")
+
+sleep(2)
+PlayEmote(creature_id, "TLA_MeleeAttack")
+sleep(2)
+PlayEmote(creature_id, "TLA_Twirl")
+sleep(2)
+PlayEmote(creature_id, "TLA_Wiggle")
+
+SetCreatureHp(creature_id, 40, 100)
+SetCreatureStat(creature_id, 1, 11, 101)
+SetCreatureStat(creature_id, 2, 22, 102)
+SetCreatureStat(creature_id, 3, 33, 103)
+SetCreatureStat(creature_id, 4, 44, 104)

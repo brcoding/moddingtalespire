@@ -37,6 +37,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.BouncePackage.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Bouncyrock.TaleSpire.3rdParty.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="Bouncyrock.TaleSpire.BounceTools.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.BounceTools.Runtime.dll</HintPath>
