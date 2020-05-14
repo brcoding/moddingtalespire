@@ -24,8 +24,8 @@ def SelectPlayerControlledByAlias(alias):
     return json.loads(ExecuteRemoteFunction('SelectPlayerControlledByAlias {0}'.format(alias)))
 
 # Selects and focuses the next player controlled creature
-def SelectNextPlayerControlled(alias):
-    return json.loads(ExecuteRemoteFunction('SelectNextPlayerControlled'))
+def SelectNextPlayerControlled():
+    return ExecuteRemoteFunction('SelectNextPlayerControlled')
 
 def SetCreatureHp(creatureId, currentHp, maxHp):
     return json.loads(ExecuteRemoteFunction('SetCreatureHp {0},{1},{2}'.format(creatureId, currentHp, maxHp)))
@@ -36,24 +36,43 @@ def SetCreatureStat(creatureId, statNumber, current, max):
 def PlayEmote(creatureId, emote):
     return json.loads(ExecuteRemoteFunction('PlayEmote {0},{1}'.format(creatureId, emote)))
 
-creature_id = ""
-for creature in GetCreatureList():
-    print("Alias: {0} Position: {1} Rotation: {2}".format(creature['Alias'], creature['Position'], creature['Rotation']))
-    #print("Alias: {0} Id: {1}".format(creature['Alias'], creature['CreatureId']))
-    if creature['Alias'] == 'Barf':
-        creature_id = creature['CreatureId']
+def Knockdown(creatureId):
+    return json.loads(ExecuteRemoteFunction('Knockdown {0}'.format(creatureId)))
 
+def MoveCreature(creatureId, direction, steps):
+    for i in range(steps):
+        json.loads(ExecuteRemoteFunction('MoveCreature {0},{1}'.format(creatureId, direction)))
+        sleep(1)
+
+def GetCreatureIdByAlias(alias):
+    for creature in GetCreatureList():
+        if creature['Alias'].lower() == alias.lower():
+            return creature['CreatureId']
+
+# creature_id = GetCreatureIdByAlias("Barf")
+# MoveCreature(creature_id, "FORWARD", 3);
+# MoveCreature(creature_id, "left", 1);
+# MoveCreature(creature_id, "FORWARD", 3);
+
+
+SelectNextPlayerControlled()
+sleep(0.5)
+SelectNextPlayerControlled()
+sleep(0.5)
+SelectNextPlayerControlled()
 #TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
-PlayEmote(creature_id, "TLA_Action_Knockdown")
-sleep(2)
-PlayEmote(creature_id, "TLA_MeleeAttack")
-sleep(2)
-PlayEmote(creature_id, "TLA_Twirl")
-sleep(2)
-PlayEmote(creature_id, "TLA_Wiggle")
+# PlayEmote(creature_id, "TLA_Action_Knockdown")
+# sleep(2)
+# PlayEmote(creature_id, "TLA_MeleeAttack")
+# sleep(2)
+# PlayEmote(creature_id, "TLA_Twirl")
+# sleep(2)
+# PlayEmote(creature_id, "TLA_Wiggle")
 
-SetCreatureHp(creature_id, 40, 100)
-SetCreatureStat(creature_id, 1, 11, 101)
-SetCreatureStat(creature_id, 2, 22, 102)
-SetCreatureStat(creature_id, 3, 33, 103)
-SetCreatureStat(creature_id, 4, 44, 104)
+# Knockdown(creature_id)
+
+# SetCreatureHp(creature_id, 40, 100)
+# SetCreatureStat(creature_id, 1, 11, 101)
+# SetCreatureStat(creature_id, 2, 22, 102)
+# SetCreatureStat(creature_id, 3, 33, 103)
+# SetCreatureStat(creature_id, 4, 44, 104)

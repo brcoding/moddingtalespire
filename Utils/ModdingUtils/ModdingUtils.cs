@@ -124,6 +124,9 @@ namespace ModdingTales
             Commands.Add("SetCreatureHp", SetCreatureHp);
             Commands.Add("SetCreatureStat", SetCreatureStat);
             Commands.Add("PlayEmote", PlayEmote);
+            Commands.Add("Knockdown", Knockdown);
+            Commands.Add("SelectCreatureByCreatureId", SelectCreatureByCreatureId);
+            Commands.Add("MoveCreature", MoveCreature);
         }
         static string ExecuteCommand(string command)
         {
@@ -242,6 +245,57 @@ namespace ModdingTales
             ccd.TorchState = cd.TorchState;
             ccd.ExplicitlyHidden = cd.ExplicitlyHidden;
             return ccd;
+        }
+
+        private static string MoveCreature(string[] input)
+        {
+            return MoveCreature(input[0], input[1]);
+        }
+
+        private static string MoveCreature(string creatureId, string direction)
+        {
+            SelectCreatureByCreatureId(creatureId);
+
+            CreatureKeyMoveBoardTool.Dir dir = (CreatureKeyMoveBoardTool.Dir) Enum.Parse(typeof(CreatureKeyMoveBoardTool.Dir), direction, true);
+            CreatureKeyMoveBoardTool.SetMoveWorldDirection(dir, false);
+            SingletonBehaviour<BoardToolManager>.Instance.SwitchToTool<CreatureKeyMoveBoardTool>(BoardToolManager.Type.Normal);
+            return new APIResponse("Move successful").ToString();
+            //CreatureBoardAsset creatureBoardAsset;
+            //if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(creatureId), out creatureBoardAsset))
+            //{
+            //    Creature creature = creatureBoardAsset.Creature;
+
+            //    CreatureKeyMoveBoardTool.
+            //    this._nav.SetTargetVelocity(@float * 6f, false);
+            //    float3 x = this._pickupObject.transform.position;
+            //    this._pickupObject.FloatTo(math.lerp(x, this._nav.transform.position, Time.deltaTime * 40f));
+            //    this._pickupObject.RotateTowards(this._nav.transform.position);
+            //    creature.Knockdown();
+            //    return new APIResponse("Emote successful").ToString(); ;
+            //}
+            //else
+            //{
+            //    return new APIResponse("Failed to emote").ToString();
+            //}
+        }
+        private static string Knockdown(string[] input)
+        {
+            return Knockdown(input[0]);
+        }
+
+        private static string Knockdown(string creatureId)
+        {
+            CreatureBoardAsset creatureBoardAsset;
+            if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(creatureId), out creatureBoardAsset))
+            {
+                Creature creature = creatureBoardAsset.Creature;
+                creature.Knockdown();
+                return new APIResponse("Emote successful").ToString(); ;
+            }
+            else
+            {
+                return new APIResponse("Failed to emote").ToString();
+            }
         }
         private static string PlayEmote(string[] input)
         {
@@ -362,6 +416,27 @@ namespace ModdingTales
             }
         }
 
+        private static string SelectCreatureByCreatureId(string[] input)
+        {
+            return SelectCreatureByCreatureId(input[0]);
+        }
+
+        public static string SelectCreatureByCreatureId(string guid)
+        {
+            try
+            {
+                var creatureNGuid = new NGuid(guid);
+
+                LocalClient.SelectedCreatureId = creatureNGuid;
+                BoardSessionManager.PushMostRecentLocallySelectedCreature(creatureNGuid);
+                CameraController.LookAtCreature(creatureNGuid);
+                return new APIResponse("Selected successfully").ToString();
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse(ex.Message, "Error selecting via nguid: " + guid).ToString();
+            }
+        }
         private static string SelectPlayerControlledByAlias(string[] input)
         {
             return SelectPlayerControlledByAlias(input[0]);
