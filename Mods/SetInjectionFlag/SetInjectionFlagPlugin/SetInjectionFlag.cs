@@ -19,5 +19,10 @@ namespace PluginUtilities
             UnityEngine.Debug.Log("SetInjectionFlag Plug-in loaded");
             ModdingUtils.Initialize(this);
         }
+
+        void Update()
+        {
+            ModdingUtils.OnUpdate();
+        }
     }
 }

@@ -42,24 +42,28 @@ def Knockdown(creatureId):
 def MoveCreature(creatureId, direction, steps):
     for i in range(steps):
         json.loads(ExecuteRemoteFunction('MoveCreature {0},{1}'.format(creatureId, direction)))
-        sleep(1)
+        sleep(0.1)
 
 def GetCreatureIdByAlias(alias):
     for creature in GetCreatureList():
         if creature['Alias'].lower() == alias.lower():
             return creature['CreatureId']
 
-# creature_id = GetCreatureIdByAlias("Barf")
-# MoveCreature(creature_id, "FORWARD", 3);
-# MoveCreature(creature_id, "left", 1);
-# MoveCreature(creature_id, "FORWARD", 3);
+creature_id = GetCreatureIdByAlias("Doober")
+MoveCreature(creature_id, "Forward", 3);
+MoveCreature(creature_id, "left", 1);
+MoveCreature(creature_id, "FORWARD", 3);
 
+creature_id = GetCreatureIdByAlias("Barf")
+MoveCreature(creature_id, "FORWARD", 3);
+MoveCreature(creature_id, "left", 1);
+MoveCreature(creature_id, "FORWARD", 3);
 
-SelectNextPlayerControlled()
-sleep(0.5)
-SelectNextPlayerControlled()
-sleep(0.5)
-SelectNextPlayerControlled()
+# SelectNextPlayerControlled()
+# sleep(0.5)
+# SelectNextPlayerControlled()
+# sleep(0.5)
+# SelectNextPlayerControlled()
 #TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
 # PlayEmote(creature_id, "TLA_Action_Knockdown")
 # sleep(2)

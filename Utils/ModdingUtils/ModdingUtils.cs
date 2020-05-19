@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using DataModel;
 using Newtonsoft.Json.Serialization;
 using Unity.Mathematics;
+using UnityEngine.PlayerLoop;
 
 namespace ModdingTales
 {
@@ -42,76 +43,18 @@ namespace ModdingTales
             return JsonConvert.SerializeObject(this);
         }
     }
-    public class PropertyRenameAndIgnoreSerializerContractResolver : DefaultContractResolver
+
+    public struct MoveAction
     {
-        private readonly Dictionary<Type, HashSet<string>> _ignores;
-        private readonly Dictionary<Type, Dictionary<string, string>> _renames;
-
-        public PropertyRenameAndIgnoreSerializerContractResolver()
-        {
-            _ignores = new Dictionary<Type, HashSet<string>>();
-            _renames = new Dictionary<Type, Dictionary<string, string>>();
-        }
-
-        public void IgnoreProperty(Type type, params string[] jsonPropertyNames)
-        {
-            if (!_ignores.ContainsKey(type))
-                _ignores[type] = new HashSet<string>();
-
-            foreach (var prop in jsonPropertyNames)
-                _ignores[type].Add(prop);
-        }
-
-        public void RenameProperty(Type type, string propertyName, string newJsonPropertyName)
-        {
-            if (!_renames.ContainsKey(type))
-                _renames[type] = new Dictionary<string, string>();
-
-            _renames[type][propertyName] = newJsonPropertyName;
-        }
-
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-        {
-            var property = base.CreateProperty(member, memberSerialization);
-
-            if (IsIgnored(property.DeclaringType, property.PropertyName))
-            {
-                property.ShouldSerialize = i => false;
-                property.Ignored = true;
-            }
-
-            if (IsRenamed(property.DeclaringType, property.PropertyName, out var newJsonPropertyName))
-                property.PropertyName = newJsonPropertyName;
-
-            return property;
-        }
-
-        private bool IsIgnored(Type type, string jsonPropertyName)
-        {
-            if (!_ignores.ContainsKey(type))
-                return false;
-
-            return _ignores[type].Contains(jsonPropertyName);
-        }
-
-        private bool IsRenamed(Type type, string jsonPropertyName, out string newJsonPropertyName)
-        {
-            Dictionary<string, string> renames;
-
-            if (!_renames.TryGetValue(type, out renames) || !renames.TryGetValue(jsonPropertyName, out newJsonPropertyName))
-            {
-                newJsonPropertyName = null;
-                return false;
-            }
-
-            return true;
-        }
+        public string guid;
+        public CreatureKeyMoveBoardTool.Dir dir;
     }
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
         private static bool serverStarted = false;
-
+        private static bool movingCreature = false;
+        private static Queue<MoveAction> moveQueue = new Queue<MoveAction>();
         //public delegate string Command(params string[] args);
         public static Dictionary<string, Func<string[], string>> Commands = new Dictionary<string, Func<string[], string>>();
 
@@ -179,7 +122,7 @@ namespace ModdingTales
                             UnityEngine.Debug.Log("Command received : " + data);
 
                             byte[] cmdResult = Encoding.ASCII.GetBytes(ExecuteCommand(data));
-
+                            
                             socket.Send(cmdResult);
                             
                             socket.Shutdown(SocketShutdown.Both);
@@ -252,31 +195,120 @@ namespace ModdingTales
             return MoveCreature(input[0], input[1]);
         }
 
+        private static void doDrop()
+        {
+            var ckmbt = SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureKeyMoveBoardTool>();
+        }
+
+        public static float moveTime = 0f;
+        public static MoveAction currentAction;
+        public static CreatureBoardAsset SelectedAsset;
+        public static Vector3 StartLocation;
+        public static Vector3 DestLocation;
+        public static CreatureNavigationController Nav = new CreatureNavigationController();
+        public static AnimationCurve MoveCurve;
+        private static Vector3 GetMoveVector(CreatureKeyMoveBoardTool.Dir dir)
+        {
+            Vector3 newPosition = Vector3.zero;
+            switch (dir)
+            {
+                case CreatureKeyMoveBoardTool.Dir.FORWARD:
+                    newPosition = CameraController.Forward;
+                    break;
+                case CreatureKeyMoveBoardTool.Dir.BACKWARDS:
+                    newPosition = -CameraController.Forward;
+                    break;
+                case CreatureKeyMoveBoardTool.Dir.LEFT:
+                    newPosition = -CameraController.Right;
+                    break;
+                case CreatureKeyMoveBoardTool.Dir.RIGHT:
+                    newPosition = CameraController.Right;
+                    break;
+            }
+            float num = -1f;
+            Vector3[] array = new Vector3[]
+            {
+                Vector3.forward,
+                -Vector3.forward,
+                Vector3.right,
+                -Vector3.right
+            };
+            Vector3 b = Vector3.forward;
+            for (int i = 0; i < array.Length; i++)
+            {
+                float num2 = Vector3.Dot(newPosition, array[i]);
+                if (num2 > num)
+                {
+                    num = num2;
+                    b = array[i];
+                }
+            }
+            newPosition = b;
+            return newPosition;
+        }
+        private static void StartMove()
+        {
+            Debug.Log("Starting Move");
+            SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Attach(SelectedAsset);
+            SelectedAsset.Pickup();
+            moveTime = 0;
+            StartLocation = SelectedAsset.transform.position;
+            var movePos = GetMoveVector(currentAction.dir);
+            DestLocation = Explorer.RoundToCreatureGrid(StartLocation + movePos);
+        }
+
+        private static void EndMove()
+        {
+            Debug.Log("End Move");
+            SelectedAsset.Drop();
+            SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Detach();
+            var creatureNGuid = new NGuid(currentAction.guid);
+            CameraController.LookAtCreature(creatureNGuid);
+        }
+        private static void UpdateMove()
+        {
+            moveTime += Time.deltaTime * 4f;
+
+            var currentPos = Vector3.Lerp(SelectedAsset.transform.position, DestLocation, moveTime);
+
+            currentPos.y = Explorer.GetTileHeightAtLocation(currentPos, 0.4f, 6f) + 1.5f;///, float scanDistance = 2);
+            SelectedAsset.RotateTowards(currentPos);
+            SelectedAsset.MoveTo(currentPos);
+
+        }
+        public static void OnUpdate()
+        {
+            if (movingCreature)
+            {
+                if (moveTime > 1)
+                {
+                    EndMove();
+                    movingCreature = false;
+                } else
+                {
+                    UpdateMove();
+                }
+            }
+
+            if (!movingCreature && moveQueue.Count() > 0)
+            {
+                moveTime = 0;
+                currentAction = moveQueue.Dequeue();
+                Debug.Log("Current Action: " + currentAction.guid + " dir: " + currentAction.dir);
+                SelectCreatureByCreatureId(currentAction.guid);
+                Debug.Log("Asset load:" + PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(LocalClient.SelectedCreatureId, out SelectedAsset));
+                StartMove();
+                movingCreature = true;
+            }
+
+        }
         private static string MoveCreature(string creatureId, string direction)
         {
-            SelectCreatureByCreatureId(creatureId);
+            CreatureKeyMoveBoardTool.Dir dir = (CreatureKeyMoveBoardTool.Dir)Enum.Parse(typeof(CreatureKeyMoveBoardTool.Dir), direction, true);
+            moveQueue.Enqueue(new MoveAction { guid = creatureId, dir = dir });
 
-            CreatureKeyMoveBoardTool.Dir dir = (CreatureKeyMoveBoardTool.Dir) Enum.Parse(typeof(CreatureKeyMoveBoardTool.Dir), direction, true);
-            CreatureKeyMoveBoardTool.SetMoveWorldDirection(dir, false);
-            SingletonBehaviour<BoardToolManager>.Instance.SwitchToTool<CreatureKeyMoveBoardTool>(BoardToolManager.Type.Normal);
+
             return new APIResponse("Move successful").ToString();
-            //CreatureBoardAsset creatureBoardAsset;
-            //if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(creatureId), out creatureBoardAsset))
-            //{
-            //    Creature creature = creatureBoardAsset.Creature;
-
-            //    CreatureKeyMoveBoardTool.
-            //    this._nav.SetTargetVelocity(@float * 6f, false);
-            //    float3 x = this._pickupObject.transform.position;
-            //    this._pickupObject.FloatTo(math.lerp(x, this._nav.transform.position, Time.deltaTime * 40f));
-            //    this._pickupObject.RotateTowards(this._nav.transform.position);
-            //    creature.Knockdown();
-            //    return new APIResponse("Emote successful").ToString(); ;
-            //}
-            //else
-            //{
-            //    return new APIResponse("Failed to emote").ToString();
-            //}
         }
         private static string Knockdown(string[] input)
         {
@@ -426,9 +458,12 @@ namespace ModdingTales
             try
             {
                 var creatureNGuid = new NGuid(guid);
-
+                if (LocalClient.SelectedCreatureId == creatureNGuid)
+                {
+                    return new APIResponse("Selected successfully").ToString();
+                }
                 LocalClient.SelectedCreatureId = creatureNGuid;
-                BoardSessionManager.PushMostRecentLocallySelectedCreature(creatureNGuid);
+                //BoardSessionManager.PushMostRecentLocallySelectedCreature(creatureNGuid);
                 CameraController.LookAtCreature(creatureNGuid);
                 return new APIResponse("Selected successfully").ToString();
             }
@@ -529,6 +564,7 @@ namespace ModdingTales
                 return new APIResponse(ex.Message, "Unable to select next.").ToString();
             }
         }
+
 
         public static Slab GetSelectedSlab()
         {
