@@ -14,9 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using DataModel;
-using Newtonsoft.Json.Serialization;
 using Unity.Mathematics;
-using UnityEngine.PlayerLoop;
 
 namespace ModdingTales
 {
@@ -47,16 +45,23 @@ namespace ModdingTales
     public struct MoveAction
     {
         public string guid;
+        public CreatureBoardAsset asset;
+        public Vector3 StartLocation;
+        public Vector3 DestLocation;
         public CreatureKeyMoveBoardTool.Dir dir;
+        public float steps;
+        public float moveTime;
     }
+
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
         private static bool serverStarted = false;
-        private static bool movingCreature = false;
-        private static Queue<MoveAction> moveQueue = new Queue<MoveAction>();
+        //private static bool movingCreature = false;
+        //private static Queue<MoveAction> moveQueue = new Queue<MoveAction>();
         //public delegate string Command(params string[] args);
         public static Dictionary<string, Func<string[], string>> Commands = new Dictionary<string, Func<string[], string>>();
+        public static List<MoveAction> currentActions = new List<MoveAction>();
 
         static ModdingUtils()
         {
@@ -70,6 +75,8 @@ namespace ModdingTales
             Commands.Add("Knockdown", Knockdown);
             Commands.Add("SelectCreatureByCreatureId", SelectCreatureByCreatureId);
             Commands.Add("MoveCreature", MoveCreature);
+            Commands.Add("MoveCamera", MoveCamera);
+            Commands.Add("SetCameraHeight", SetCameraHeight);
         }
         static string ExecuteCommand(string command)
         {
@@ -77,14 +84,14 @@ namespace ModdingTales
             {
                 UnityEngine.Debug.Log("Command: \"" + command + "\"");
                 var parts = command.Split(' ');
-                //UnityEngine.Debug.Log(parts[0]);
+                UnityEngine.Debug.Log(parts[0].Trim());
                 //UnityEngine.Debug.Log(string.Join(",", Commands.Keys));
                 return Commands[parts[0].Trim()].Invoke(string.Join(" ", parts.Skip(1)).Trim().Split(','));
 
             }
-            catch
+            catch (Exception ex)
             {
-                return new APIResponse("Failed to find command", "Unknown command").ToString();
+                return new APIResponse(ex.Message + ex.StackTrace, "Unknown command").ToString();
             }
         }
         private static void StartSocketServer()
@@ -190,23 +197,67 @@ namespace ModdingTales
             return ccd;
         }
 
+        private static string SetCameraHeight(string[] input)
+        {
+            return SetCameraHeight(input[0], input[1]);
+        }
+
+        public static string SetCameraHeight(string height, string absolute)
+        {
+            if (bool.Parse(absolute))
+            {
+                CameraController.MoveToHeight(float.Parse(height), true);
+            }
+            else
+            {
+                CameraController.MoveToHeight(float.Parse(height) + CameraController.CameraHeight, true);
+            }
+            return new APIResponse("Camera Move successful").ToString();
+        }
+        
+        private static string MoveCamera(string[] input)
+        {
+            Debug.Log("Move Camear 1");
+            return MoveCamera(input[0], input[1], input[2], input[3], input[4]);
+        }
+
+        public static string MoveCamera(string rotation, string x, string y, string z, string absolute)
+        {
+            Debug.Log("Move Camera: " + rotation + ", " + x + ", " + z + ", " + absolute);
+            // Rotation
+            //CameraController
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+
+            Transform t = (Transform)CameraController.Instance.GetType().GetField("_camRotator", flags).GetValue(CameraController.Instance);
+
+            //var newPos = new float3(float.Parse(x), float.Parse(y), float.Parse(z));
+            var babsolute = bool.Parse(absolute);
+            if (babsolute)
+            {
+                Debug.Log("Abs");
+                //Debug.Log("New Pos:" + newPos);
+                //CameraController.MoveToPosition(newPos, true);
+                t.localRotation = Quaternion.Euler(0f, float.Parse(rotation), 0f);
+                //Camera.main.fieldOfView = float.Parse(zoom);
+                
+                CameraController.LookAtTargetXZ(new Vector2(float.Parse(x), float.Parse(z)));
+            }
+            else
+            {
+                Debug.Log("Relative");
+                //CameraController.MoveToPosition(newPos + (float3)CameraController.Position, true);
+                t.localRotation = Quaternion.Euler(0f, float.Parse(rotation), 0f);
+                //Camera.main.fieldOfView = Camera.main.fieldOfView + float.Parse(zoom);
+                CameraController.LookAtTargetXZ(new Vector2(float.Parse(x) + CameraController.Position.x, float.Parse(z) + CameraController.Position.z));
+            }
+            return new APIResponse("Camera Move successful").ToString();
+        }
         private static string MoveCreature(string[] input)
         {
-            return MoveCreature(input[0], input[1]);
+            return MoveCreature(input[0], input[1], input[2]);
         }
 
-        private static void doDrop()
-        {
-            var ckmbt = SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureKeyMoveBoardTool>();
-        }
 
-        public static float moveTime = 0f;
-        public static MoveAction currentAction;
-        public static CreatureBoardAsset SelectedAsset;
-        public static Vector3 StartLocation;
-        public static Vector3 DestLocation;
-        public static CreatureNavigationController Nav = new CreatureNavigationController();
-        public static AnimationCurve MoveCurve;
         private static Vector3 GetMoveVector(CreatureKeyMoveBoardTool.Dir dir)
         {
             Vector3 newPosition = Vector3.zero;
@@ -246,66 +297,93 @@ namespace ModdingTales
             newPosition = b;
             return newPosition;
         }
-        private static void StartMove()
+        private static void StartMove(MoveAction ma)
         {
-            Debug.Log("Starting Move");
-            SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Attach(SelectedAsset);
-            SelectedAsset.Pickup();
-            moveTime = 0;
-            StartLocation = SelectedAsset.transform.position;
-            var movePos = GetMoveVector(currentAction.dir);
-            DestLocation = Explorer.RoundToCreatureGrid(StartLocation + movePos);
+            //SelectCreatureByCreatureId(ma.guid);
+            PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(ma.guid), out ma.asset);
+            SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Attach(ma.asset);
+            ma.asset.Pickup();
+            ma.moveTime = 0;
+            ma.StartLocation = ma.asset.transform.position;
+            Debug.Log("Start: " + ma.StartLocation);
+            var movePos = GetMoveVector(ma.dir) * ma.steps;
+            Debug.Log("MoveVec: " + movePos);
+            ma.DestLocation = Explorer.RoundToCreatureGrid(ma.StartLocation + movePos);
+            Debug.Log("Dest: " + ma.DestLocation);
+            currentActions.Add(ma);
         }
 
-        private static void EndMove()
-        {
-            Debug.Log("End Move");
-            SelectedAsset.Drop();
-            SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Detach();
-            var creatureNGuid = new NGuid(currentAction.guid);
-            CameraController.LookAtCreature(creatureNGuid);
-        }
         private static void UpdateMove()
         {
-            moveTime += Time.deltaTime * 4f;
+            for (int i = currentActions.Count() - 1; i >= 0; i--)
+            {
 
-            var currentPos = Vector3.Lerp(SelectedAsset.transform.position, DestLocation, moveTime);
+                Debug.Log("Updating: " + i);
+                Debug.Log(currentActions[i]);
+                MoveAction ma = currentActions[i];
+                ma.moveTime += (Time.deltaTime / (ma.steps * 0.6f));
+                currentActions[i] = ma;
 
-            currentPos.y = Explorer.GetTileHeightAtLocation(currentPos, 0.4f, 6f) + 1.5f;///, float scanDistance = 2);
-            SelectedAsset.RotateTowards(currentPos);
-            SelectedAsset.MoveTo(currentPos);
+                var currentPos = Vector3.Lerp(currentActions[i].asset.transform.position, currentActions[i].DestLocation, currentActions[i].moveTime);
 
+                currentPos.y = Explorer.GetTileHeightAtLocation(currentPos, 0.4f) + 1.5f;
+                currentActions[i].asset.RotateTowards(currentPos);
+                currentActions[i].asset.MoveTo(currentPos);
+                Debug.Log("Drop check:" + currentPos + " dest:" + currentActions[i].DestLocation);
+                if (currentPos.x == currentActions[i].DestLocation.x && currentPos.z == currentActions[i].DestLocation.z)
+                {
+                    Debug.Log("Dropping");
+                    //SelectCreatureByCreatureId(currentActions[i].guid);
+                    currentActions[i].asset.Drop();
+                    SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Detach();
+                    var creatureNGuid = new NGuid(currentActions[i].guid);
+                    CameraController.LookAtCreature(creatureNGuid);
+                    currentActions.RemoveAt(i);
+                }
+
+            }
         }
+
+        // This only needs to be called from update if you are using the socket API or MoveCharacter calls.
         public static void OnUpdate()
         {
-            if (movingCreature)
-            {
-                if (moveTime > 1)
-                {
-                    EndMove();
-                    movingCreature = false;
-                } else
-                {
-                    UpdateMove();
-                }
-            }
+            UpdateMove();
+            //for (int i = 0; i < currentActions.Length; i++)
+            //{
 
-            if (!movingCreature && moveQueue.Count() > 0)
-            {
-                moveTime = 0;
-                currentAction = moveQueue.Dequeue();
-                Debug.Log("Current Action: " + currentAction.guid + " dir: " + currentAction.dir);
-                SelectCreatureByCreatureId(currentAction.guid);
-                Debug.Log("Asset load:" + PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(LocalClient.SelectedCreatureId, out SelectedAsset));
-                StartMove();
-                movingCreature = true;
-            }
+            //}
+            //    if (currentActions.Length > 0)
+            //{
+                
+            //}
+            //if (movingCreature)
+            //{
+            //    if (moveTime > 1)
+            //    {
+            //        EndMove();
+            //        movingCreature = false;
+            //    } else
+            //    {
+            //        UpdateMove();
+            //    }
+            //}
+
+            //if (!movingCreature && moveQueue.Count() > 0)
+            //{
+            //    moveTime = 0;
+            //    currentAction = moveQueue.Dequeue();
+            //    Debug.Log("Current Action: " + currentAction.guid + " dir: " + currentAction.dir);
+            //    SelectCreatureByCreatureId(currentAction.guid);
+            //    Debug.Log("Asset load:" + PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(LocalClient.SelectedCreatureId, out SelectedAsset));
+            //    StartMove();
+            //    movingCreature = true;
+            //}
 
         }
-        private static string MoveCreature(string creatureId, string direction)
+        private static string MoveCreature(string creatureId, string direction, string steps)
         {
             CreatureKeyMoveBoardTool.Dir dir = (CreatureKeyMoveBoardTool.Dir)Enum.Parse(typeof(CreatureKeyMoveBoardTool.Dir), direction, true);
-            moveQueue.Enqueue(new MoveAction { guid = creatureId, dir = dir });
+            StartMove(new MoveAction { guid = creatureId, dir = dir, steps = float.Parse(steps) });
 
 
             return new APIResponse("Move successful").ToString();
@@ -359,7 +437,6 @@ namespace ModdingTales
                 List<CustomCreatureData> allCreatures = new List<CustomCreatureData>();
 
                 var board = BoardSessionManager.Board;
-                var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
 
                 board.SetCreatureStatByIndex(new NGuid(creatureId), new CreatureStat(float.Parse(current), float.Parse(max)), int.Parse(statIdx));
                 SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureMenuBoardTool>().CallUpdate();
@@ -382,7 +459,6 @@ namespace ModdingTales
                 List<CustomCreatureData> allCreatures = new List<CustomCreatureData>();
 
                 var board = BoardSessionManager.Board;
-                var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
 
                 board.SetCreatureStatByIndex(new NGuid(creatureId), new CreatureStat(float.Parse(currentHp), float.Parse(maxHp)), -1);
                 SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureMenuBoardTool>().CallUpdate();
@@ -635,12 +711,16 @@ namespace ModdingTales
             return Camera.main.GetComponent<PostProcessLayer>();
         }
 
-        public static void Initialize(BaseUnityPlugin parentPlugin)
+        public static void Initialize(BaseUnityPlugin parentPlugin, bool startSocket=false)
         {
             AppStateManager.UsingCodeInjection = true;
             ModdingUtils.parentPlugin = parentPlugin;
             SceneManager.sceneLoaded += OnSceneLoaded;
-            StartSocketServer();
+            // By default do not start the socket server. It requires the caller to also call OnUpdate in the plugin update method.
+            if (startSocket)
+            {
+                StartSocketServer();
+            }
         }
 
         public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)

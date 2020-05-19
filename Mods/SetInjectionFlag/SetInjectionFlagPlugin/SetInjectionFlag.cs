@@ -1,12 +1,5 @@
 ﻿using BepInEx;
 using ModdingTales;
-using System;
-using System.IO;
-using System.IO.Pipes;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PluginUtilities
 {
@@ -18,11 +11,6 @@ namespace PluginUtilities
         {
             UnityEngine.Debug.Log("SetInjectionFlag Plug-in loaded");
             ModdingUtils.Initialize(this);
-        }
-
-        void Update()
-        {
-            ModdingUtils.OnUpdate();
         }
     }
 }
