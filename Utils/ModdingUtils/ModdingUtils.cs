@@ -85,9 +85,9 @@ namespace ModdingTales
         {
             try
             {
-                UnityEngine.Debug.Log("Command: \"" + command + "\"");
+                //UnityEngine.Debug.Log("Command: \"" + command + "\"");
                 var parts = command.Split(' ');
-                UnityEngine.Debug.Log(parts[0].Trim());
+                //UnityEngine.Debug.Log(parts[0].Trim());
                 //UnityEngine.Debug.Log(string.Join(",", Commands.Keys));
                 return Commands[parts[0].Trim()].Invoke(string.Join(" ", parts.Skip(1)).Trim().Split(','));
 
@@ -119,17 +119,17 @@ namespace ModdingTales
 
                     while (true)
                     {
-                        UnityEngine.Debug.Log("Waiting for a connection...");
+                        //UnityEngine.Debug.Log("Waiting for a connection...");
                         while (true)
                         {
                             Socket socket = listener.Accept();
                             string data = "";
-                            UnityEngine.Debug.Log("Connected");
+                            //UnityEngine.Debug.Log("Connected");
 
                             int bytesRec = socket.Receive(buffer);
                             data += Encoding.ASCII.GetString(buffer, 0, bytesRec);
 
-                            UnityEngine.Debug.Log("Command received : " + data);
+                            //UnityEngine.Debug.Log("Command received : " + data);
 
                             byte[] cmdResult = Encoding.ASCII.GetBytes(ExecuteCommand(data));
                             
@@ -220,7 +220,6 @@ namespace ModdingTales
 
         private static string RotateCamera(string[] input)
         {
-            Debug.Log("Move Camear 1");
             return RotateCamera(input[0], input[1]);
         }
 
@@ -243,27 +242,23 @@ namespace ModdingTales
         }
         private static string MoveCamera(string[] input)
         {
-            Debug.Log("Move Camear 1");
             return MoveCamera(input[0], input[1], input[2], input[3]);
         }
 
         public static string MoveCamera(string x, string y, string z, string absolute)
         {
-            Debug.Log("Move Camera: " + x + ", " + z + ", " + absolute);
+            //Debug.Log("Move Camera: " + x + ", " + z + ", " + absolute);
             var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
             Transform t = (Transform)CameraController.Instance.GetType().GetField("_camRotator", flags).GetValue(CameraController.Instance);
 
             var babsolute = bool.Parse(absolute);
             if (babsolute)
             {
-                Debug.Log("Abs");
-                //Debug.Log("New Pos:" + newPos);
                 //CameraController.MoveToPosition(newPos, true);
                 CameraController.LookAtTargetXZ(new Vector2(float.Parse(x), float.Parse(z)));
             }
             else
             {
-                Debug.Log("Relative");
                 //CameraController.MoveToPosition(newPos + (float3)CameraController.Position, true);
                 //Camera.main.fieldOfView = Camera.main.fieldOfView + float.Parse(zoom);
                 CameraController.LookAtTargetXZ(new Vector2(float.Parse(x) + CameraController.Position.x, float.Parse(z) + CameraController.Position.z));
@@ -317,7 +312,6 @@ namespace ModdingTales
         }
         private static void StartMove(MoveAction ma)
         {
-            //SelectCreatureByCreatureId(ma.guid);
             PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(ma.guid), out ma.asset);
             if (ma.useHandle)
             {
@@ -327,11 +321,11 @@ namespace ModdingTales
             ma.asset.Pickup();
             ma.moveTime = 0;
             ma.StartLocation = ma.asset.transform.position;
-            Debug.Log("Start: " + ma.StartLocation);
+            //Debug.Log("Start: " + ma.StartLocation);
             var movePos = GetMoveVector(ma.dir) * ma.steps;
-            Debug.Log("MoveVec: " + movePos);
+            //Debug.Log("MoveVec: " + movePos);
             ma.DestLocation = Explorer.RoundToCreatureGrid(ma.StartLocation + movePos);
-            Debug.Log("Dest: " + ma.DestLocation);
+            //Debug.Log("Dest: " + ma.DestLocation);
             currentActions.Add(ma);
         }
 
@@ -340,8 +334,8 @@ namespace ModdingTales
             for (int i = currentActions.Count() - 1; i >= 0; i--)
             {
 
-                Debug.Log("Updating: " + i);
-                Debug.Log(currentActions[i]);
+                //Debug.Log("Updating: " + i);
+                //Debug.Log(currentActions[i]);
                 MoveAction ma = currentActions[i];
                 ma.moveTime += (Time.deltaTime / (ma.steps * 0.6f));
                 currentActions[i] = ma;
@@ -351,14 +345,11 @@ namespace ModdingTales
                 currentPos.y = Explorer.GetTileHeightAtLocation(currentPos, 0.4f) + 1.5f;
                 currentActions[i].asset.RotateTowards(currentPos);
                 currentActions[i].asset.MoveTo(currentPos);
-                Debug.Log("Drop check:" + currentPos + " dest:" + currentActions[i].DestLocation);
+                //Debug.Log("Drop check:" + currentPos + " dest:" + currentActions[i].DestLocation);
                 if (currentPos.x == currentActions[i].DestLocation.x && currentPos.z == currentActions[i].DestLocation.z)
                 {
-                    Debug.Log("Dropping");
-                    //SelectCreatureByCreatureId(currentActions[i].guid);
+                    //Debug.Log("Dropping");
                     currentActions[i].asset.Drop();
-                    //if (currentActions[i].hasHandle;
-                    //SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Detach();
                     if (currentActions[i].useHandle)
                     {
                         currentActions[i].handle.Detach();
@@ -540,7 +531,6 @@ namespace ModdingTales
                     return new APIResponse("Selected successfully").ToString();
                 }
                 LocalClient.SelectedCreatureId = creatureNGuid;
-                //BoardSessionManager.PushMostRecentLocallySelectedCreature(creatureNGuid);
                 CameraController.LookAtCreature(creatureNGuid);
                 return new APIResponse("Selected successfully").ToString();
             }
@@ -565,9 +555,9 @@ namespace ModdingTales
                     int i = 0;
                     while (i < creatureIds.Length)
                     {
-                        Debug.Log(LocalClient.SelectedCreatureId);
-                        Debug.Log(creatureIds[i]);
-                        Debug.Log(BoardSessionManager.Board.GetCreatureData(creatureIds[i]).Alias);
+                        //Debug.Log(LocalClient.SelectedCreatureId);
+                        //Debug.Log(creatureIds[i]);
+                        //Debug.Log(BoardSessionManager.Board.GetCreatureData(creatureIds[i]).Alias);
                         if (BoardSessionManager.Board.GetCreatureData(creatureIds[i]).Alias.ToLower() == alias.ToLower())
                         {
                             LocalClient.SelectedCreatureId = creatureIds[i];
@@ -608,19 +598,17 @@ namespace ModdingTales
                     int i = 0;
                     while (i < creatureIds.Length)
                     {
-                        Debug.Log(LocalClient.SelectedCreatureId);
-                        Debug.Log(creatureIds[i]);
-                        Debug.Log(BoardSessionManager.Board.GetCreatureData(creatureIds[i]).Alias);
+                        //Debug.Log(LocalClient.SelectedCreatureId);
+                        //Debug.Log(creatureIds[i]);
+                        //Debug.Log(BoardSessionManager.Board.GetCreatureData(creatureIds[i]).Alias);
                         if (creatureIds[i] == LocalClient.SelectedCreatureId)
                         {
                             if (i + 1 < creatureIds.Length)
                             {
-                                Debug.Log("One");
                                 LocalClient.SelectedCreatureId = creatureIds[i + 1];
                                 CameraController.LookAtCreature(creatureIds[i + 1]);
                                 break;
                             }
-                            Debug.Log("Zero");
                             LocalClient.SelectedCreatureId = creatureIds[0];
                             CameraController.LookAtCreature(creatureIds[0]);
                             break;
@@ -726,7 +714,7 @@ namespace ModdingTales
 
         public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            UnityEngine.Debug.Log("Loading Scene: " + scene.name);
+            //UnityEngine.Debug.Log("Loading Scene: " + scene.name);
             if (scene.name == "UI") {
                 TextMeshProUGUI betaText = GetUITextByName("BETA");
                 if (betaText)
