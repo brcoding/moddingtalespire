@@ -51,6 +51,8 @@ namespace ModdingTales
         public CreatureKeyMoveBoardTool.Dir dir;
         public float steps;
         public float moveTime;
+        public MovableHandle handle;
+        public bool useHandle;
     }
 
     public static class ModdingUtils
@@ -77,6 +79,7 @@ namespace ModdingTales
             Commands.Add("MoveCreature", MoveCreature);
             Commands.Add("MoveCamera", MoveCamera);
             Commands.Add("SetCameraHeight", SetCameraHeight);
+            Commands.Add("RotateCamera", RotateCamera);
         }
         static string ExecuteCommand(string command)
         {
@@ -214,39 +217,54 @@ namespace ModdingTales
             }
             return new APIResponse("Camera Move successful").ToString();
         }
-        
-        private static string MoveCamera(string[] input)
+
+        private static string RotateCamera(string[] input)
         {
             Debug.Log("Move Camear 1");
-            return MoveCamera(input[0], input[1], input[2], input[3], input[4]);
+            return RotateCamera(input[0], input[1]);
         }
 
-        public static string MoveCamera(string rotation, string x, string y, string z, string absolute)
+        public static string RotateCamera(string rotation, string absolute)
         {
-            Debug.Log("Move Camera: " + rotation + ", " + x + ", " + z + ", " + absolute);
-            // Rotation
-            //CameraController
             var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
 
             Transform t = (Transform)CameraController.Instance.GetType().GetField("_camRotator", flags).GetValue(CameraController.Instance);
 
-            //var newPos = new float3(float.Parse(x), float.Parse(y), float.Parse(z));
+            var babsolute = bool.Parse(absolute);
+            if (babsolute)
+            {
+                t.localRotation = Quaternion.Euler(0f, float.Parse(rotation), 0f);
+            }
+            else
+            {
+                t.localRotation = Quaternion.Euler(0f, float.Parse(rotation) + t.localRotation.eulerAngles.y, 0f);
+            }
+            return new APIResponse("Camera Move successful").ToString();
+        }
+        private static string MoveCamera(string[] input)
+        {
+            Debug.Log("Move Camear 1");
+            return MoveCamera(input[0], input[1], input[2], input[3]);
+        }
+
+        public static string MoveCamera(string x, string y, string z, string absolute)
+        {
+            Debug.Log("Move Camera: " + x + ", " + z + ", " + absolute);
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+            Transform t = (Transform)CameraController.Instance.GetType().GetField("_camRotator", flags).GetValue(CameraController.Instance);
+
             var babsolute = bool.Parse(absolute);
             if (babsolute)
             {
                 Debug.Log("Abs");
                 //Debug.Log("New Pos:" + newPos);
                 //CameraController.MoveToPosition(newPos, true);
-                t.localRotation = Quaternion.Euler(0f, float.Parse(rotation), 0f);
-                //Camera.main.fieldOfView = float.Parse(zoom);
-                
                 CameraController.LookAtTargetXZ(new Vector2(float.Parse(x), float.Parse(z)));
             }
             else
             {
                 Debug.Log("Relative");
                 //CameraController.MoveToPosition(newPos + (float3)CameraController.Position, true);
-                t.localRotation = Quaternion.Euler(0f, float.Parse(rotation), 0f);
                 //Camera.main.fieldOfView = Camera.main.fieldOfView + float.Parse(zoom);
                 CameraController.LookAtTargetXZ(new Vector2(float.Parse(x) + CameraController.Position.x, float.Parse(z) + CameraController.Position.z));
             }
@@ -254,7 +272,7 @@ namespace ModdingTales
         }
         private static string MoveCreature(string[] input)
         {
-            return MoveCreature(input[0], input[1], input[2]);
+            return MoveCreature(input[0], input[1], input[2], input[3]);
         }
 
 
@@ -301,7 +319,11 @@ namespace ModdingTales
         {
             //SelectCreatureByCreatureId(ma.guid);
             PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(ma.guid), out ma.asset);
-            SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Attach(ma.asset);
+            if (ma.useHandle)
+            {
+                ma.handle = MovableHandle.Spawn();
+                ma.handle.Attach(ma.asset);
+            }
             ma.asset.Pickup();
             ma.moveTime = 0;
             ma.StartLocation = ma.asset.transform.position;
@@ -335,9 +357,15 @@ namespace ModdingTales
                     Debug.Log("Dropping");
                     //SelectCreatureByCreatureId(currentActions[i].guid);
                     currentActions[i].asset.Drop();
-                    SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Detach();
+                    //if (currentActions[i].hasHandle;
+                    //SingletonBehaviour<BoardToolManager>.Instance.MovableHandle.Detach();
+                    if (currentActions[i].useHandle)
+                    {
+                        currentActions[i].handle.Detach();
+                        PhotonNetwork.Destroy(currentActions[i].handle.gameObject);
+                    }
                     var creatureNGuid = new NGuid(currentActions[i].guid);
-                    CameraController.LookAtCreature(creatureNGuid);
+                    //CameraController.LookAtCreature(creatureNGuid);
                     currentActions.RemoveAt(i);
                 }
 
@@ -348,43 +376,16 @@ namespace ModdingTales
         public static void OnUpdate()
         {
             UpdateMove();
-            //for (int i = 0; i < currentActions.Length; i++)
-            //{
-
-            //}
-            //    if (currentActions.Length > 0)
-            //{
-                
-            //}
-            //if (movingCreature)
-            //{
-            //    if (moveTime > 1)
-            //    {
-            //        EndMove();
-            //        movingCreature = false;
-            //    } else
-            //    {
-            //        UpdateMove();
-            //    }
-            //}
-
-            //if (!movingCreature && moveQueue.Count() > 0)
-            //{
-            //    moveTime = 0;
-            //    currentAction = moveQueue.Dequeue();
-            //    Debug.Log("Current Action: " + currentAction.guid + " dir: " + currentAction.dir);
-            //    SelectCreatureByCreatureId(currentAction.guid);
-            //    Debug.Log("Asset load:" + PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(LocalClient.SelectedCreatureId, out SelectedAsset));
-            //    StartMove();
-            //    movingCreature = true;
-            //}
-
         }
-        private static string MoveCreature(string creatureId, string direction, string steps)
+        private static string MoveCreature(string creatureId, string direction, string steps, string carryCreature)
         {
+            bool useHandle = false;
+            if (carryCreature != "")
+            {
+                useHandle = bool.Parse(carryCreature);
+            }
             CreatureKeyMoveBoardTool.Dir dir = (CreatureKeyMoveBoardTool.Dir)Enum.Parse(typeof(CreatureKeyMoveBoardTool.Dir), direction, true);
-            StartMove(new MoveAction { guid = creatureId, dir = dir, steps = float.Parse(steps) });
-
+            StartMove(new MoveAction { guid = creatureId, dir = dir, steps = float.Parse(steps), useHandle = useHandle });
 
             return new APIResponse("Move successful").ToString();
         }
