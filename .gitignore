@@ -1,6 +1,7 @@
 *.suo
 *.user
 _ReSharper.*
+__pycache__
 bin
 obj
 build
