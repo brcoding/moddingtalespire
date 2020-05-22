@@ -3,7 +3,6 @@ from time import sleep
 import json
 
 def ExecuteRemoteFunction(command):
-    # print(command)
     port = 999
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('127.0.0.1', port))
@@ -43,11 +42,14 @@ def Knockdown(creatureId):
 def SetCameraHeight(height, absolute):
     return json.loads(ExecuteRemoteFunction('SetCameraHeight {0},{1}'.format(height, absolute)))
 
-def MoveCamera(rotation, x, y, z, absolute):
+def MoveCamera(x, y, z, absolute):
     return json.loads(ExecuteRemoteFunction('MoveCamera {0},{1},{2},{3},{4}'.format(rotation, x, y, z, absolute)))
 
-def MoveCreature(creatureId, direction, steps):
-    return json.loads(ExecuteRemoteFunction('MoveCreature {0},{1},{2}'.format(creatureId, direction, steps)))
+def RotateCamera(rotation, absolute):
+    return json.loads(ExecuteRemoteFunction('RotateCamera {0},{1}'.format(rotation, absolute)))
+
+def MoveCreature(creatureId, direction, steps=1, pickUp=False):
+    return json.loads(ExecuteRemoteFunction('MoveCreature {0},{1},{2},{3}'.format(creatureId, direction, steps, pickUp)))
 
 def GetCreatureIdByAlias(alias):
     for creature in GetCreatureList():
@@ -64,13 +66,13 @@ def GetCreatureIdByAlias(alias):
 # sleep(0.4)
 # SetCameraHeight(0, True)
 # print(MoveCamera(0, 10, 0, 0, False))
-creature_id = GetCreatureIdByAlias("Doober")
-MoveCreature(creature_id, "Forward", 3);
+# creature_id = GetCreatureIdByAlias("Doober")
+# MoveCreature(creature_id, "Forward", 3);
 # MoveCreature(creature_id, "left", 1);
 # MoveCreature(creature_id, "FORWARD", 3);
-sleep(0.4)
-creature_id = GetCreatureIdByAlias("Barf")
-MoveCreature(creature_id, "FORWARD", 3);
+# sleep(0.4)
+# creature_id = GetCreatureIdByAlias("Barf")
+# MoveCreature(creature_id, "FORWARD", 3);
 # MoveCreature(creature_id, "left", 1);
 # MoveCreature(creature_id, "FORWARD", 3);
 
