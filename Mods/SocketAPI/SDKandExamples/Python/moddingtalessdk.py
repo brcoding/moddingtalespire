@@ -23,6 +23,10 @@ def GetPlayerControlledList():
 def SelectPlayerControlledByAlias(alias):
     return json.loads(ExecuteRemoteFunction('SelectPlayerControlledByAlias {0}'.format(alias)))
 
+# Selects a creature by creature id
+def SelectCreatureByCreatureId(creatureId):
+    return json.loads(ExecuteRemoteFunction('SelectCreatureByCreatureId {0}'.format(creatureId)))
+
 # Selects and focuses the next player controlled creature
 def SelectNextPlayerControlled():
     return ExecuteRemoteFunction('SelectNextPlayerControlled')
