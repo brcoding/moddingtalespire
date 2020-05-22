@@ -7,7 +7,7 @@
     <ProjectGuid>{4E4DEB5E-97F9-4901-BF67-6748A9C1229A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SetInjectionFlagPlugin</RootNamespace>
+    <RootNamespace>PreviewAssetPlugin</RootNamespace>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -35,38 +35,29 @@
     </Reference>
     <Reference Include="Bouncyrock.BouncePackage.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.BouncePackage.Runtime.dll</HintPath>
+      <HintPath>..\..\..\..\..\RemoveFogPlugin\Libs\Bouncyrock.BouncePackage.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Bouncyrock.TaleSpire.3rdParty.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Bouncyrock.TaleSpire.AssetManagement, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.AssetManagement.dll</HintPath>
+    </Reference>
     <Reference Include="Bouncyrock.TaleSpire.BounceTools.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.BounceTools.Runtime.dll</HintPath>
+      <HintPath>..\..\..\..\..\RemoveFogPlugin\Libs\Bouncyrock.TaleSpire.BounceTools.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Bouncyrock.TaleSpire.DataModel.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="Bouncyrock.TaleSpire.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Bouncyrock.TaleSpire.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=106.11.2.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\RestSharp.106.11.2\lib\net452\RestSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Unity.Mathematics, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Unity.Mathematics.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Postprocessing.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\Unity.Postprocessing.Runtime.dll</HintPath>
@@ -83,20 +74,74 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\RemoveFogPlugin\Libs\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Test\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\TaleSpire\TaleSpire_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Utils\ModdingUtils\ModdingUtils.cs">
-      <Link>ModdingUtils.cs</Link>
-    </Compile>
+    <Compile Include="FastObjImporter.cs" />
+    <Compile Include="ModdingUtils.cs" />
+    <Compile Include="ObjImporter.cs" />
+    <Compile Include="OBJImport\CharWordReader.cs" />
+    <Compile Include="OBJImport\MTLLoader.cs" />
+    <Compile Include="OBJImport\OBJLoader.cs" />
+    <Compile Include="OBJImport\OBJLoaderHelper.cs" />
+    <Compile Include="OBJImport\OBJObjectBuilder.cs" />
+    <Compile Include="OBJImport\Samples\ObjFromFile.cs" />
+    <Compile Include="OBJImport\Samples\ObjFromStream.cs" />
+    <Compile Include="OBJImport\StringExtensions.cs" />
+    <Compile Include="OBJImport\TextureLoader\BinaryExtensions.cs" />
+    <Compile Include="OBJImport\TextureLoader\BMPLoader.cs" />
+    <Compile Include="OBJImport\TextureLoader\ColorExtensions.cs" />
+    <Compile Include="OBJImport\TextureLoader\DDSLoader.cs" />
+    <Compile Include="OBJImport\TextureLoader\ImageLoader.cs" />
+    <Compile Include="OBJImport\TextureLoader\ImageLoaderHelper.cs" />
+    <Compile Include="OBJImport\TextureLoader\ImageUtils.cs" />
+    <Compile Include="OBJImport\TextureLoader\TGALoader.cs" />
+    <Compile Include="OpenFileItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SetInjectionFlag.cs" />
+    <Compile Include="PreviewAsset.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="OBJImport\CharWordReader.cs.meta" />
+    <None Include="OBJImport\MTLLoader.cs.meta" />
+    <None Include="OBJImport\OBJLoader.cs.meta" />
+    <None Include="OBJImport\OBJLoaderHelper.cs.meta" />
+    <None Include="OBJImport\OBJObjectBuilder.cs.meta" />
+    <None Include="OBJImport\README.HTML.meta" />
+    <None Include="OBJImport\Samples.meta" />
+    <None Include="OBJImport\Samples\ObjFromFile.cs.meta" />
+    <None Include="OBJImport\Samples\ObjFromFile.unity" />
+    <None Include="OBJImport\Samples\ObjFromFile.unity.meta" />
+    <None Include="OBJImport\Samples\ObjFromStream.cs.meta" />
+    <None Include="OBJImport\Samples\ObjFromStream.unity" />
+    <None Include="OBJImport\Samples\ObjFromStream.unity.meta" />
+    <None Include="OBJImport\StringExtensions.cs.meta" />
+    <None Include="OBJImport\TextureLoader.meta" />
+    <None Include="OBJImport\TextureLoader\BinaryExtensions.cs.meta" />
+    <None Include="OBJImport\TextureLoader\BMPLoader.cs.meta" />
+    <None Include="OBJImport\TextureLoader\ColorExtensions.cs.meta" />
+    <None Include="OBJImport\TextureLoader\DDSLoader.cs.meta" />
+    <None Include="OBJImport\TextureLoader\ImageLoader.cs.meta" />
+    <None Include="OBJImport\TextureLoader\ImageLoaderHelper.cs.meta" />
+    <None Include="OBJImport\TextureLoader\ImageUtils.cs.meta" />
+    <None Include="OBJImport\TextureLoader\TGALoader.cs.meta" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OBJImport\README.HTML" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

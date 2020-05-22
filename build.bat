@@ -9,7 +9,10 @@ copy Mods\SetInjectionFlag\SetInjectionFlagPlugin\bin\Release\SetInjectionFlagPl
 copy Mods\RForRotate\RForRotatePlugin\bin\Release\RForRotatePlugin.dll build\
 copy Mods\RemoveFogPlugin\RemoveFogPlugin\bin\Release\RemoveFogPlugin.dll build\
 copy Mods\RemoveDoFPlugin\RemoveDoFPlugin\bin\Release\RemoveDoFPlugin.dll build\
-
+copy Mods\SocketAPI\bin\Release\SocketAPI.dll build\
+copy Mods\SocketAPI\SDKandExamples\CSharp\SocketAPIGUI\bin\Release\SocketAPIGUI.exe build\
+copy Mods\SocketAPI\SDKandExamples\CSharp\SocketAPIGUI\bin\Release\SocketAPIGUI.exe.config build\
+copy Mods\SocketAPI\SDKandExamples\CSharp\SocketAPIGUI\bin\Release\Newtonsoft.Json.dll build\
 
 REM Clone the external projects with mods
 IF EXIST TmpTaleSpireModding (
@@ -60,8 +63,21 @@ copy build\SwitchCharacters.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\SwitchCharacters-Full.zip
 del tmp\BepInEx\plugins\SwitchCharacters.dll
 
+copy build\SocketAPI.dll tmp\BepInEx\plugins\
+copy build\SocketAPIGUI.exe tmp\
+copy build\SocketAPIGUI.exe.config tmp\
+copy build\Newtonsoft.Json.dll tmp\
+powershell Compress-Archive tmp\* build\SocketAPI-Full.zip
+del tmp\BepInEx\plugins\SocketAPI.dll
+
+powershell Compress-Archive -path build\SocketAPIGUI.exe,build\SocketAPIGUI.exe.config,build\Newtonsoft.Json.dll build\SocketAPIGui-OnlyUI.zip
+
 copy build\*.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\AllPlugins-Full.zip
+
+del build\SocketAPIGUI.exe
+del build\SocketAPIGUI.exe.config
+del build\Newtonsoft.Json.dll
 
 rmdir tmp\ /s /q
 
