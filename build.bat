@@ -70,8 +70,14 @@ copy build\Newtonsoft.Json.dll tmp\
 powershell Compress-Archive tmp\* build\SocketAPI-Full.zip
 del tmp\BepInEx\plugins\SocketAPI.dll
 
+powershell Compress-Archive -path build\SocketAPIGUI.exe,build\SocketAPIGUI.exe.config,build\Newtonsoft.Json.dll build\SocketAPIGui-OnlyUI.zip
+
 copy build\*.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\AllPlugins-Full.zip
+
+del build\SocketAPIGUI.exe
+del build\SocketAPIGUI.exe.config
+del build\Newtonsoft.Json.dll
 
 rmdir tmp\ /s /q
 
