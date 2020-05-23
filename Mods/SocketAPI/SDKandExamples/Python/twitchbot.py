@@ -93,6 +93,13 @@ async def camera(ctx):
             return
         RotateCamera(parts[2], False)
         return
+    if "zoom" in ctx.content:
+        parts = ctx.content.split(' ')
+        if len(parts) < 3:
+            await ctx.send("Camera zoom command must include the amount (a value 1-10 decimals are allowed) (!camera zoom 4)")
+            return
+        ZoomCamera(float(parts[2]) / 10, True)
+        return
     if "move" in ctx.content:
         parts = ctx.content.split(' ')
         if len(parts) < 4:

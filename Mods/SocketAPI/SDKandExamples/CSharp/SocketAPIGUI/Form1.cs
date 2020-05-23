@@ -262,5 +262,15 @@ namespace SocketAPIGUI
         {
             string data = SendMessage("MoveCamera", new string[] { camMoveX.Value.ToString(), "0", camMoveZ.Value.ToString(), "True" });
         }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            string data = SendMessage("ZoomCamera", new string[] { "-0.1", "False" });
+        }
+
+        private void button20_Click(object sender, EventArgs e)
+        {
+            string data = SendMessage("ZoomCamera", new string[] { "0.1", "True" });
+        }
     }
 }

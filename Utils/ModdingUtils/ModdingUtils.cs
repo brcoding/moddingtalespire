@@ -80,6 +80,7 @@ namespace ModdingTales
             Commands.Add("MoveCamera", MoveCamera);
             Commands.Add("SetCameraHeight", SetCameraHeight);
             Commands.Add("RotateCamera", RotateCamera);
+            Commands.Add("ZoomCamera", ZoomCamera);
         }
         static string ExecuteCommand(string command)
         {
@@ -240,6 +241,35 @@ namespace ModdingTales
             }
             return new APIResponse("Camera Move successful").ToString();
         }
+
+        private static string ZoomCamera(string[] input)
+        {
+            return ZoomCamera(input[0], input[1]);
+        }
+
+        public static string ZoomCamera(string zoom, string absolute)
+        {
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+            Transform t = (Transform)CameraController.Instance.GetType().GetField("_camRotator", flags).GetValue(CameraController.Instance);
+            float current_zoom = (float)CameraController.Instance.GetType().GetField("_targetZoomLerpValue", flags).GetValue(CameraController.Instance);
+            float minFov = 0;
+            float maxFov = 1;
+
+
+
+            float newZoom;
+            var babsolute = bool.Parse(absolute);
+            if (babsolute)
+            {
+                newZoom = Mathf.Clamp(float.Parse(zoom), minFov, maxFov);
+            } else
+            {
+                newZoom = Mathf.Clamp(current_zoom + float.Parse(zoom), minFov, maxFov);
+            }
+            CameraController.Instance.GetType().GetField("_targetZoomLerpValue", flags).SetValue(CameraController.Instance, newZoom);
+            return new APIResponse("Camera Move successful").ToString();
+        }
+
         private static string MoveCamera(string[] input)
         {
             return MoveCamera(input[0], input[1], input[2], input[3]);
@@ -247,9 +277,9 @@ namespace ModdingTales
 
         public static string MoveCamera(string x, string y, string z, string absolute)
         {
-            //Debug.Log("Move Camera: " + x + ", " + z + ", " + absolute);
             var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
             Transform t = (Transform)CameraController.Instance.GetType().GetField("_camRotator", flags).GetValue(CameraController.Instance);
+            float zoom = (float)CameraController.Instance.GetType().GetField("_targetZoomLerpValue", flags).GetValue(CameraController.Instance);
 
             var babsolute = bool.Parse(absolute);
             if (babsolute)
@@ -260,7 +290,6 @@ namespace ModdingTales
             else
             {
                 //CameraController.MoveToPosition(newPos + (float3)CameraController.Position, true);
-                //Camera.main.fieldOfView = Camera.main.fieldOfView + float.Parse(zoom);
                 CameraController.LookAtTargetXZ(new Vector2(float.Parse(x) + CameraController.Position.x, float.Parse(z) + CameraController.Position.z));
             }
             return new APIResponse("Camera Move successful").ToString();
