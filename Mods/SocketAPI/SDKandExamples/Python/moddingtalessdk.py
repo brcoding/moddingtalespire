@@ -3,6 +3,7 @@ from time import sleep
 import json
 
 def ExecuteRemoteFunction(command):
+    print(command)
     port = 999
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('127.0.0.1', port))
@@ -47,7 +48,7 @@ def SetCameraHeight(height, absolute):
     return json.loads(ExecuteRemoteFunction('SetCameraHeight {0},{1}'.format(height, absolute)))
 
 def MoveCamera(x, y, z, absolute):
-    return json.loads(ExecuteRemoteFunction('MoveCamera {0},{1},{2},{3},{4}'.format(rotation, x, y, z, absolute)))
+    return json.loads(ExecuteRemoteFunction('MoveCamera {0},{1},{2},{3}'.format(x, y, z, absolute)))
 
 def RotateCamera(rotation, absolute):
     return json.loads(ExecuteRemoteFunction('RotateCamera {0},{1}'.format(rotation, absolute)))
