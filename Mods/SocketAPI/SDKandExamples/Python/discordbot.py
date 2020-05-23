@@ -36,6 +36,14 @@ class TaleBot(discord.Client):
                         MoveCreature(creature["CreatureId"], parts[2], parts[3], True)
             return
         if "!camera" in message.content:
+
+            if "zoom" in message.content:
+                parts = message.content.split(' ')
+                if len(parts) < 3:
+                    await message.channel.send("Camera zoom command must include the amount (a value 1-10 decimals are allowed) (!camera zoom 4)")
+                    return
+                ZoomCamera(float(parts[2]) / 10, True)
+                return
             
             if "rotate" in message.content:
                 parts = message.content.split(' ')

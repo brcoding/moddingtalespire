@@ -50,6 +50,9 @@ def SetCameraHeight(height, absolute):
 def MoveCamera(x, y, z, absolute):
     return json.loads(ExecuteRemoteFunction('MoveCamera {0},{1},{2},{3}'.format(x, y, z, absolute)))
 
+def ZoomCamera(zoom, absolute):
+    return json.loads(ExecuteRemoteFunction('ZoomCamera {0},{1}'.format(zoom, absolute)))
+
 def RotateCamera(rotation, absolute):
     return json.loads(ExecuteRemoteFunction('RotateCamera {0},{1}'.format(rotation, absolute)))
 
