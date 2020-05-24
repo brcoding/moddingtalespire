@@ -100,6 +100,13 @@ async def camera(ctx):
             return
         ZoomCamera(float(parts[2]) / 10, True)
         return
+    if "tilt" in ctx.content:
+        parts = ctx.content.split(' ')
+        if len(parts) < 3:
+            await ctx.send("Camera tilt command must include the degrees (!camera tilt 20)")
+            return
+        TiltCamera(float(parts[2]), True)
+        return
     if "move" in ctx.content:
         parts = ctx.content.split(' ')
         if len(parts) < 4:

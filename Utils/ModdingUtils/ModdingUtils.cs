@@ -81,6 +81,7 @@ namespace ModdingTales
             Commands.Add("SetCameraHeight", SetCameraHeight);
             Commands.Add("RotateCamera", RotateCamera);
             Commands.Add("ZoomCamera", ZoomCamera);
+            Commands.Add("TiltCamera", TiltCamera);
         }
         static string ExecuteCommand(string command)
         {
@@ -215,6 +216,30 @@ namespace ModdingTales
             else
             {
                 CameraController.MoveToHeight(float.Parse(height) + CameraController.CameraHeight, true);
+            }
+            return new APIResponse("Camera Move successful").ToString();
+        }
+
+        private static string TiltCamera(string[] input)
+        {
+            return TiltCamera(input[0], input[1]);
+        }
+
+        public static string TiltCamera(string tilt, string absolute)
+        {
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+
+            Transform t = (Transform)CameraController.Instance.GetType().GetField("_tiltTransform", flags).GetValue(CameraController.Instance);
+
+            // TODO: Move this to the update method so it can be done with animation instead of just a sudden jolt. Same with rotation.
+            var babsolute = bool.Parse(absolute);
+            if (babsolute)
+            {
+                t.localRotation = Quaternion.Euler(float.Parse(tilt), 0f, 0f);
+            }
+            else
+            {
+                t.localRotation = Quaternion.Euler(t.localRotation.eulerAngles.x + float.Parse(tilt), 0f, 0f);
             }
             return new APIResponse("Camera Move successful").ToString();
         }
