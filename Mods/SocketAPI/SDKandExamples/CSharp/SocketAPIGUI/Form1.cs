@@ -113,6 +113,7 @@ namespace SocketAPIGUI
         private void button1_Click(object sender, EventArgs e)
         {
             string data = SendMessage("GetCreatureList", new string[0]);
+            Console.WriteLine(data);
             dynamic json = JsonConvert.DeserializeObject(data);
             creatureList.Clear();
             foreach (dynamic item in json)
@@ -270,7 +271,7 @@ namespace SocketAPIGUI
 
         private void button20_Click(object sender, EventArgs e)
         {
-            string data = SendMessage("ZoomCamera", new string[] { "0.1", "True" });
+            string data = SendMessage("ZoomCamera", new string[] { "0.1", "False" });
         }
     }
 }

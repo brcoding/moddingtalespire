@@ -5,7 +5,7 @@ import threading
 from moddingtalessdk import *
 
 def main():
-    print(TiltCamera(20, True))
+    print(GetCreatureList())
 
 if __name__ == "__main__":
     main()
