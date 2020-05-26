@@ -54,7 +54,33 @@ namespace ModdingTales
         public MovableHandle handle;
         public bool useHandle;
     }
+    public class F3
+    {
+        public F3(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        public float x;
+        public float y;
+        public float z;
+    }
 
+    public class Euler
+    {
+        public Euler(float x, float y, float z, float w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+        public float x;
+        public float y;
+        public float z;
+        public float w;
+    }
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
@@ -81,6 +107,7 @@ namespace ModdingTales
             Commands.Add("SetCameraHeight", SetCameraHeight);
             Commands.Add("RotateCamera", RotateCamera);
             Commands.Add("ZoomCamera", ZoomCamera);
+            Commands.Add("TiltCamera", TiltCamera);
         }
         static string ExecuteCommand(string command)
         {
@@ -156,14 +183,15 @@ namespace ModdingTales
             return GetPlayerControlledList();
         }
  
+
         public struct CustomCreatureData
         {
 
             public string BoardAssetId;
             public string CreatureId;
             public string UniqueId;
-            public Vector3 Position;
-            public Quaternion Rotation;
+            public F3 Position;
+            public Euler Rotation;
             public string Alias;
             public string AvatarThumbnailUrl;
             public Color[] Colors;
@@ -185,8 +213,9 @@ namespace ModdingTales
             ccd.BoardAssetId = cd.BoardAssetId.ToString();
             ccd.CreatureId = cd.CreatureId.ToString();
             ccd.UniqueId = cd.UniqueId.ToString();
-            ccd.Position = cd.Position;
-            ccd.Rotation = cd.Rotation;
+            //ccd.Position = cd.Position;
+            ccd.Position = new F3(cd.Position.x, cd.Position.y, cd.Position.z);
+            ccd.Rotation = new Euler(cd.Rotation.value.x, cd.Rotation.value.y, cd.Rotation.value.z, cd.Rotation.value.w);
             ccd.Alias = cd.Alias;
             ccd.AvatarThumbnailUrl = cd.AvatarThumbnailUrl;
             ccd.Colors = cd.Colors;
@@ -215,6 +244,30 @@ namespace ModdingTales
             else
             {
                 CameraController.MoveToHeight(float.Parse(height) + CameraController.CameraHeight, true);
+            }
+            return new APIResponse("Camera Move successful").ToString();
+        }
+
+        private static string TiltCamera(string[] input)
+        {
+            return TiltCamera(input[0], input[1]);
+        }
+
+        public static string TiltCamera(string tilt, string absolute)
+        {
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+
+            Transform t = (Transform)CameraController.Instance.GetType().GetField("_tiltTransform", flags).GetValue(CameraController.Instance);
+
+            // TODO: Move this to the update method so it can be done with animation instead of just a sudden jolt. Same with rotation.
+            var babsolute = bool.Parse(absolute);
+            if (babsolute)
+            {
+                t.localRotation = Quaternion.Euler(float.Parse(tilt), 0f, 0f);
+            }
+            else
+            {
+                t.localRotation = Quaternion.Euler(t.localRotation.eulerAngles.x + float.Parse(tilt), 0f, 0f);
             }
             return new APIResponse("Camera Move successful").ToString();
         }
@@ -509,7 +562,6 @@ namespace ModdingTales
                 {
                     allCreatures.Add(convertCreatureData(entry.Value));
                 }
-
                 return JsonConvert.SerializeObject(allCreatures);
             }
             catch (Exception ex)

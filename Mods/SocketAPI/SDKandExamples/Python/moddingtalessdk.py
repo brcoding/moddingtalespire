@@ -56,6 +56,9 @@ def ZoomCamera(zoom, absolute):
 def RotateCamera(rotation, absolute):
     return json.loads(ExecuteRemoteFunction('RotateCamera {0},{1}'.format(rotation, absolute)))
 
+def TiltCamera(tilt, absolute):
+    return json.loads(ExecuteRemoteFunction('TiltCamera {0},{1}'.format(tilt, absolute)))
+
 def MoveCreature(creatureId, direction, steps=1, pickUp=False):
     return json.loads(ExecuteRemoteFunction('MoveCreature {0},{1},{2},{3}'.format(creatureId, direction, steps, pickUp)))
 

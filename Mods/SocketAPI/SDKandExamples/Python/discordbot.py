@@ -15,14 +15,33 @@ class TaleBot(discord.Client):
             return
         if message.channel.id != discord_channel:
             return
-        if "!characters" in message.content:
+        if "!help" in message.content:
+            output = "__Available Commands:__\n"
+            output += "**!characters**\n"
+            output += "   Gets a list of characters you can control.\n"
+            output += "**!move character direction[forward,backwards,right,left] step**\n"
+            output += "   Moves a character you control steps in a direction.\n"
+            output += "   Example: ```!move gunter forward 1```"
+            output += "**!camera zoom distance[1-10]**\n"
+            output += "   Zooms the camera to a set height from 1-10. You can also provide decimals (2.5).\n"
+            output += "   Example: ```!camera zoom 5```"
+            output += "**!camera rotate degrees**\n"
+            output += "   Rotates the camera +-degrees from it's current postion\n"
+            output += "   Example: ```!camera rotate 45```"
+            output += "**!camera move x z**\n"
+            output += "   Moves the camera relative to the current position by the new x and z values.\n"
+            output += "   Example: ```!camera move 1 1```"
+            output += "```!camera move 2 -1```"
+            await message.channel.send(output)
+            return
+        if message.content.startswith("!characters"):
             output = "Available Characters for {0}:\n".format(message.author)
             for creature in GetCreatureList():
                 if str(message.author) in creature["Alias"]:
                     output += "    " + creature["Alias"].split('[')[0].strip() + '\n'
             await message.channel.send(output)
             return
-        if "!move" in message.content:
+        if message.content.startswith("!move"):
             parts = message.content.split(' ')
             if len(parts) < 4:
                 await message.channel.send("You must specify a character to move, direction (forward, backwards, left, right), and how many steps (!move gunter forward 2)")
@@ -35,7 +54,7 @@ class TaleBot(discord.Client):
                     if creature["Alias"].split('[')[0].strip() == parts[1]:
                         MoveCreature(creature["CreatureId"], parts[2], parts[3], True)
             return
-        if "!camera" in message.content:
+        if message.content.startswith("!camera"):
 
             if "zoom" in message.content:
                 parts = message.content.split(' ')
@@ -43,6 +62,14 @@ class TaleBot(discord.Client):
                     await message.channel.send("Camera zoom command must include the amount (a value 1-10 decimals are allowed) (!camera zoom 4)")
                     return
                 ZoomCamera(float(parts[2]) / 10, True)
+                return
+
+            if "tilt" in message.content:
+                parts = message.content.split(' ')
+                if len(parts) < 3:
+                    await message.channel.send("Camera tilt command must include the degrees (!camera tilt 20)")
+                    return
+                TiltCamera(parts[2], True)
                 return
             
             if "rotate" in message.content:
