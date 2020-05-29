@@ -1,4 +1,6 @@
 import os
+import string
+
 import discord
 from dotenv import load_dotenv
 from moddingtalessdk import *
@@ -11,6 +13,7 @@ discord_channel = int(os.getenv('DISCORD_CHANNEL'))
 class TaleBot(discord.Client):
     async def on_message(self, message):
         global getting_who, s
+
         if message.author == client.user:
             return
         if message.channel.id != discord_channel:
@@ -87,6 +90,17 @@ class TaleBot(discord.Client):
                 MoveCamera(parts[2], 0, parts[3], False)
                 return
             return
+        # Parse every character every time there is a message and see if the
+        # author matches a creature then say what they say in game.
+        #output = "Available Characters for {0}:\n".format(message.author)
+        for creature in GetCreatureList():
+            if str(message.author) in creature["Alias"]:
+                printable = set(string.printable)
+                filtered = ''.join(filter(lambda x: x in printable, message.content))
+                SayText(creature["CreatureId"], filtered)
+                # Only for the first character found.
+                break
+        return
 
 client = TaleBot()
 client.run(token)
