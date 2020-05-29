@@ -273,5 +273,13 @@ namespace SocketAPIGUI
         {
             string data = SendMessage("ZoomCamera", new string[] { "0.1", "False" });
         }
+
+        private void button21_Click(object sender, EventArgs e)
+        {
+            foreach (CustomCreatureData ccd in lbCreatureList.SelectedItems)
+            {
+                string data = SendMessage("SayText", new string[] { ccd.CreatureId, tbSay.Text });
+            }
+        }
     }
 }
