@@ -36,6 +36,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button20 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
             this.button18 = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.camMoveZ = new System.Windows.Forms.NumericUpDown();
@@ -85,8 +87,8 @@
             this.cbEmotes = new System.Windows.Forms.ComboBox();
             this.lbCreatureList = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.button19 = new System.Windows.Forms.Button();
-            this.button20 = new System.Windows.Forms.Button();
+            this.button21 = new System.Windows.Forms.Button();
+            this.tbSay = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -162,6 +164,8 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.tbSay);
+            this.panel1.Controls.Add(this.button21);
             this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Controls.Add(this.groupBox1);
@@ -195,6 +199,28 @@
             this.groupBox3.TabIndex = 15;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Camera Controls";
+            // 
+            // button20
+            // 
+            this.button20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button20.Location = new System.Drawing.Point(6, 120);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(42, 42);
+            this.button20.TabIndex = 25;
+            this.button20.Text = "-";
+            this.button20.UseVisualStyleBackColor = true;
+            this.button20.Click += new System.EventHandler(this.button20_Click);
+            // 
+            // button19
+            // 
+            this.button19.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button19.Location = new System.Drawing.Point(6, 33);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(42, 42);
+            this.button19.TabIndex = 24;
+            this.button19.Text = "+";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
             // 
             // button18
             // 
@@ -351,7 +377,7 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.hpcurr);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(13, 325);
+            this.groupBox2.Location = new System.Drawing.Point(14, 265);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(336, 289);
             this.groupBox2.TabIndex = 14;
@@ -638,7 +664,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(274, 270);
+            this.button6.Location = new System.Drawing.Point(626, 339);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(75, 35);
             this.button6.TabIndex = 8;
@@ -654,7 +680,7 @@
             "TLA_Action_Knockdown",
             "TLA_Wiggle",
             "TLA_MeleeAttack"});
-            this.cbEmotes.Location = new System.Drawing.Point(23, 274);
+            this.cbEmotes.Location = new System.Drawing.Point(375, 343);
             this.cbEmotes.Name = "cbEmotes";
             this.cbEmotes.Size = new System.Drawing.Size(237, 28);
             this.cbEmotes.TabIndex = 7;
@@ -681,27 +707,22 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button19
+            // button21
             // 
-            this.button19.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button19.Location = new System.Drawing.Point(6, 33);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(42, 42);
-            this.button19.TabIndex = 24;
-            this.button19.Text = "+";
-            this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.button19_Click);
+            this.button21.Location = new System.Drawing.Point(626, 398);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(75, 35);
+            this.button21.TabIndex = 16;
+            this.button21.Text = "Say";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
             // 
-            // button20
+            // tbSay
             // 
-            this.button20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button20.Location = new System.Drawing.Point(6, 120);
-            this.button20.Name = "button20";
-            this.button20.Size = new System.Drawing.Size(42, 42);
-            this.button20.TabIndex = 25;
-            this.button20.Text = "-";
-            this.button20.UseVisualStyleBackColor = true;
-            this.button20.Click += new System.EventHandler(this.button20_Click);
+            this.tbSay.Location = new System.Drawing.Point(375, 402);
+            this.tbSay.Name = "tbSay";
+            this.tbSay.Size = new System.Drawing.Size(237, 26);
+            this.tbSay.TabIndex = 17;
             // 
             // Form1
             // 
@@ -719,6 +740,7 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.camMoveZ)).EndInit();
@@ -804,6 +826,8 @@
         private System.Windows.Forms.NumericUpDown camMoveX;
         private System.Windows.Forms.Button button20;
         private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.TextBox tbSay;
+        private System.Windows.Forms.Button button21;
     }
 }
 
