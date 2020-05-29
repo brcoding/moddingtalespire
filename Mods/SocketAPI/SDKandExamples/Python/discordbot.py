@@ -22,6 +22,9 @@ class TaleBot(discord.Client):
             output = "__Available Commands:__\n"
             output += "**!characters**\n"
             output += "   Gets a list of characters you can control.\n"
+            output += "**!focus character**\n"
+            output += "   Focus the camera on a specific character you control.\n"
+            output += "   Example: ```!focus gunter```"
             output += "**!move character direction[forward,backwards,right,left] step**\n"
             output += "   Moves a character you control steps in a direction.\n"
             output += "   Example: ```!move gunter forward 1```"
@@ -44,6 +47,17 @@ class TaleBot(discord.Client):
                     output += "    " + creature["Alias"].split('[')[0].strip() + '\n'
             await message.channel.send(output)
             return
+        if message.content.startswith("!focus"):
+            parts = message.content.split(' ')
+            if len(parts) < 2:
+                await message.channel.send("You must specify a character to focus on (!focus gunter)")
+                return
+            for creature in GetCreatureList():
+                if str(message.author) in creature["Alias"]:
+                    if creature["Alias"].split('[')[0].strip() == parts[1]:
+                        SelectCreatureByCreatureId(creature["CreatureId"])
+                        break
+            return            
         if message.content.startswith("!move"):
             parts = message.content.split(' ')
             if len(parts) < 4:
