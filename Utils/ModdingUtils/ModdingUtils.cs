@@ -81,6 +81,11 @@ namespace ModdingTales
         public float z;
         public float w;
     }
+    public struct SayTextData
+    {
+        public string CreatureId;
+        public string Text;
+    }
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
@@ -90,7 +95,7 @@ namespace ModdingTales
         //public delegate string Command(params string[] args);
         public static Dictionary<string, Func<string[], string>> Commands = new Dictionary<string, Func<string[], string>>();
         public static List<MoveAction> currentActions = new List<MoveAction>();
-
+        public static Queue<SayTextData> sayTextQueue = new Queue<SayTextData>();
         static ModdingUtils()
         {
             Commands.Add("SelectNextPlayerControlled", SelectNextPlayerControlled);
@@ -108,6 +113,7 @@ namespace ModdingTales
             Commands.Add("RotateCamera", RotateCamera);
             Commands.Add("ZoomCamera", ZoomCamera);
             Commands.Add("TiltCamera", TiltCamera);
+            Commands.Add("SayText", SayText);
         }
         static string ExecuteCommand(string command)
         {
@@ -228,6 +234,17 @@ namespace ModdingTales
             ccd.TorchState = cd.TorchState;
             ccd.ExplicitlyHidden = cd.ExplicitlyHidden;
             return ccd;
+        }
+
+        private static string SayText(string[] input)
+        {
+            return SayText(input[0], input[1]);
+        }
+
+        public static string SayText(string creatureId, string text)
+        {
+            sayTextQueue.Enqueue(new SayTextData { CreatureId = creatureId, Text = text });
+            return new APIResponse("Say queued successful").ToString();
         }
 
         private static string SetCameraHeight(string[] input)
@@ -445,10 +462,40 @@ namespace ModdingTales
             }
         }
 
+        public static void UpdateSpeech()
+        {
+            try
+            {
+                var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+                while (sayTextQueue.Count > 0)
+                {
+                    var sayText = sayTextQueue.Dequeue();
+                    CreatureBoardAsset creatureBoardAsset;
+                    if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(sayText.CreatureId), out creatureBoardAsset))
+                    {
+                        Creature creature = creatureBoardAsset.Creature;
+                        creature.Speak(sayText.Text);
+                    }
+                }
+
+                var tbm = SingletonBehaviour<TextBubbleManager>.Instance;
+                List<TextBubble> bubbles = (List<TextBubble>)tbm.GetType().GetField("_bubblesInUse", flags).GetValue(tbm);
+                foreach (var bubble in bubbles)
+                {
+                    TextMeshProUGUI bubbleText = (TextMeshProUGUI)bubble.GetType().GetField("_text", flags).GetValue(bubble);
+                    bubbleText.GetComponent<RectTransform>().localPosition = new Vector2(-(bubbleText.preferredWidth / 2), bubbleText.GetComponent<RectTransform>().localPosition.y);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex.Message + ex.StackTrace);
+            }
+        }
         // This only needs to be called from update if you are using the socket API or MoveCharacter calls.
         public static void OnUpdate()
         {
             UpdateMove();
+            UpdateSpeech();
         }
         private static string MoveCreature(string creatureId, string direction, string steps, string carryCreature)
         {

@@ -41,6 +41,9 @@ def SetCreatureStat(creatureId, statNumber, current, max):
 def PlayEmote(creatureId, emote):
     return json.loads(ExecuteRemoteFunction('PlayEmote {0},{1}'.format(creatureId, emote)))
 
+def SayText(creatureId, text):
+    return json.loads(ExecuteRemoteFunction('SayText {0},{1}'.format(creatureId, text)))
+
 def Knockdown(creatureId):
     return json.loads(ExecuteRemoteFunction('Knockdown {0}'.format(creatureId)))
 
