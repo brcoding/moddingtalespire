@@ -96,6 +96,8 @@ namespace ModdingTales
         public static Dictionary<string, Func<string[], string>> Commands = new Dictionary<string, Func<string[], string>>();
         public static List<MoveAction> currentActions = new List<MoveAction>();
         public static Queue<SayTextData> sayTextQueue = new Queue<SayTextData>();
+        public static string[] customStatNames = new string[4] { "", "", "", "" };
+
         static ModdingUtils()
         {
             Commands.Add("SelectNextPlayerControlled", SelectNextPlayerControlled);
@@ -114,6 +116,7 @@ namespace ModdingTales
             Commands.Add("ZoomCamera", ZoomCamera);
             Commands.Add("TiltCamera", TiltCamera);
             Commands.Add("SayText", SayText);
+            Commands.Add("SetCustomStatName", SetCustomStatName);
         }
         static string ExecuteCommand(string command)
         {
@@ -311,7 +314,18 @@ namespace ModdingTales
             }
             return new APIResponse("Camera Move successful").ToString();
         }
+        
+        private static string SetCustomStatName(string[] input)
+        {
+            return SetCustomStatName(input[0], input[1]);
+        }
 
+        public static string SetCustomStatName(string index, string newName)
+        {
+            Debug.Log("Index " + index + " new name: " + newName);
+            customStatNames[int.Parse(index) - 1] = newName;
+            return new APIResponse("Stat Name Set").ToString();
+        }
         private static string ZoomCamera(string[] input)
         {
             return ZoomCamera(input[0], input[1]);
@@ -491,11 +505,33 @@ namespace ModdingTales
                 Debug.Log(ex.Message + ex.StackTrace);
             }
         }
+
+        public static void UpdateCustomStatNames()
+        {
+            TextMeshProUGUI stat;
+            for (int i = 0; i < customStatNames.Length; i++)
+            {
+
+                if (customStatNames[i] != "")
+                {
+                    Debug.Log("Inside statnames");
+                    Debug.Log("Stat " + (i + 1));
+                    stat = GetUITextContainsString("Stat " + (i + 1));
+                    if (stat)
+                    {
+                        Debug.Log("Found stat " + i);
+                        stat.text = customStatNames[i];
+                    }
+                }
+            }
+        }
+
         // This only needs to be called from update if you are using the socket API or MoveCharacter calls.
         public static void OnUpdate()
         {
             UpdateMove();
             UpdateSpeech();
+            UpdateCustomStatNames();
         }
         private static string MoveCreature(string creatureId, string direction, string steps, string carryCreature)
         {
@@ -559,7 +595,7 @@ namespace ModdingTales
 
                 var board = BoardSessionManager.Board;
 
-                board.SetCreatureStatByIndex(new NGuid(creatureId), new CreatureStat(float.Parse(current), float.Parse(max)), int.Parse(statIdx));
+                board.SetCreatureStatByIndex(new NGuid(creatureId), new CreatureStat(float.Parse(current), float.Parse(max)), int.Parse(statIdx) - 1);
                 SingletonBehaviour<BoardToolManager>.Instance.GetTool<CreatureMenuBoardTool>().CallUpdate();
                 return new APIResponse(String.Format("Set stat{0} to {1}:{2} for {3}", statIdx, current, max, creatureId)).ToString();
             }
