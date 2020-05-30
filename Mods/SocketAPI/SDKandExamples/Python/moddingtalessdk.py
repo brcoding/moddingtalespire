@@ -36,7 +36,10 @@ def SetCreatureHp(creatureId, currentHp, maxHp):
     return json.loads(ExecuteRemoteFunction('SetCreatureHp {0},{1},{2}'.format(creatureId, currentHp, maxHp)))
 
 def SetCreatureStat(creatureId, statNumber, current, max):
-    return json.loads(ExecuteRemoteFunction('SetCreatureStat {0},{1},{2},{3}'.format(creatureId, statNumber - 1, current, max)))
+    return json.loads(ExecuteRemoteFunction('SetCreatureStat {0},{1},{2},{3}'.format(creatureId, statNumber, current, max)))
+
+def SetCustomStatName(statNumber, newName):
+    return json.loads(ExecuteRemoteFunction('SetCustomStatName {0},{1}'.format(statNumber, newName)))
 
 def PlayEmote(creatureId, emote):
     return json.loads(ExecuteRemoteFunction('PlayEmote {0},{1}'.format(creatureId, emote)))

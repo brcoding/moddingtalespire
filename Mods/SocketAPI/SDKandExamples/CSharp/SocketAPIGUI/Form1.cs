@@ -281,5 +281,49 @@ namespace SocketAPIGUI
                 string data = SendMessage("SayText", new string[] { ccd.CreatureId, tbSay.Text });
             }
         }
+
+        private void lbStat1_Click(object sender, EventArgs e)
+        {
+            TextDialog td = new TextDialog("Update Name", "What do you want to change the name to?", lbStat1.Text);
+            if (td.ShowDialog() == DialogResult.OK)
+            {
+                lbStat1.Text = td.Answer;
+                SendMessage("SetCustomStatName", new string[] { "1", lbStat1.Text });
+                
+            }
+        }
+
+        private void lbStat2_Click(object sender, EventArgs e)
+        {
+            TextDialog td = new TextDialog("Update Name", "What do you want to change the name to?", lbStat2.Text);
+            if (td.ShowDialog() == DialogResult.OK)
+            {
+                lbStat2.Text = td.Answer;
+                SendMessage("SetCustomStatName", new string[] { "2", lbStat2.Text });
+
+            }
+        }
+
+        private void lbStat3_Click(object sender, EventArgs e)
+        {
+            TextDialog td = new TextDialog("Update Name", "What do you want to change the name to?", lbStat3.Text);
+            if (td.ShowDialog() == DialogResult.OK)
+            {
+                lbStat3.Text = td.Answer;
+                SendMessage("SetCustomStatName", new string[] { "3", lbStat3.Text });
+
+            }
+        }
+
+        private void lbStat4_Click(object sender, EventArgs e)
+        {
+            TextDialog td = new TextDialog("Update Name", "What do you want to change the name to?", lbStat4.Text);
+            if (td.ShowDialog() == DialogResult.OK)
+            {
+                lbStat4.Text = td.Answer;
+                SendMessage("SetCustomStatName", new string[] { "4", lbStat4.Text });
+
+            }
+        }
     }
 }

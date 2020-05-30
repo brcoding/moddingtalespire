@@ -60,19 +60,19 @@
             this.st4max = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.st4curr = new System.Windows.Forms.NumericUpDown();
-            this.label10 = new System.Windows.Forms.Label();
+            this.lbStat4 = new System.Windows.Forms.Label();
             this.st3max = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.st3curr = new System.Windows.Forms.NumericUpDown();
-            this.label8 = new System.Windows.Forms.Label();
+            this.lbStat3 = new System.Windows.Forms.Label();
             this.st2max = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.st2curr = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
+            this.lbStat2 = new System.Windows.Forms.Label();
             this.st1max = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.st1curr = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lbStat1 = new System.Windows.Forms.Label();
             this.hpmax = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.hpcurr = new System.Windows.Forms.NumericUpDown();
@@ -360,19 +360,19 @@
             this.groupBox2.Controls.Add(this.st4max);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.st4curr);
-            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.lbStat4);
             this.groupBox2.Controls.Add(this.st3max);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.st3curr);
-            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.lbStat3);
             this.groupBox2.Controls.Add(this.st2max);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.st2curr);
-            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.lbStat2);
             this.groupBox2.Controls.Add(this.st1max);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.st1curr);
-            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.lbStat1);
             this.groupBox2.Controls.Add(this.hpmax);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.hpcurr);
@@ -457,14 +457,15 @@
             this.st4curr.Size = new System.Drawing.Size(67, 26);
             this.st4curr.TabIndex = 31;
             // 
-            // label10
+            // lbStat4
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 238);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(52, 20);
-            this.label10.TabIndex = 30;
-            this.label10.Text = "Stat 4";
+            this.lbStat4.AutoSize = true;
+            this.lbStat4.Location = new System.Drawing.Point(6, 238);
+            this.lbStat4.Name = "lbStat4";
+            this.lbStat4.Size = new System.Drawing.Size(52, 20);
+            this.lbStat4.TabIndex = 30;
+            this.lbStat4.Text = "Stat 4";
+            this.lbStat4.Click += new System.EventHandler(this.lbStat4_Click);
             // 
             // st3max
             // 
@@ -489,14 +490,15 @@
             this.st3curr.Size = new System.Drawing.Size(67, 26);
             this.st3curr.TabIndex = 27;
             // 
-            // label8
+            // lbStat3
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 194);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(52, 20);
-            this.label8.TabIndex = 26;
-            this.label8.Text = "Stat 3";
+            this.lbStat3.AutoSize = true;
+            this.lbStat3.Location = new System.Drawing.Point(6, 194);
+            this.lbStat3.Name = "lbStat3";
+            this.lbStat3.Size = new System.Drawing.Size(52, 20);
+            this.lbStat3.TabIndex = 26;
+            this.lbStat3.Text = "Stat 3";
+            this.lbStat3.Click += new System.EventHandler(this.lbStat3_Click);
             // 
             // st2max
             // 
@@ -521,14 +523,15 @@
             this.st2curr.Size = new System.Drawing.Size(67, 26);
             this.st2curr.TabIndex = 23;
             // 
-            // label6
+            // lbStat2
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 150);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(52, 20);
-            this.label6.TabIndex = 22;
-            this.label6.Text = "Stat 2";
+            this.lbStat2.AutoSize = true;
+            this.lbStat2.Location = new System.Drawing.Point(6, 150);
+            this.lbStat2.Name = "lbStat2";
+            this.lbStat2.Size = new System.Drawing.Size(52, 20);
+            this.lbStat2.TabIndex = 22;
+            this.lbStat2.Text = "Stat 2";
+            this.lbStat2.Click += new System.EventHandler(this.lbStat2_Click);
             // 
             // st1max
             // 
@@ -553,14 +556,15 @@
             this.st1curr.Size = new System.Drawing.Size(67, 26);
             this.st1curr.TabIndex = 19;
             // 
-            // label4
+            // lbStat1
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 106);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(52, 20);
-            this.label4.TabIndex = 18;
-            this.label4.Text = "Stat 1";
+            this.lbStat1.AutoSize = true;
+            this.lbStat1.Location = new System.Drawing.Point(6, 106);
+            this.lbStat1.Name = "lbStat1";
+            this.lbStat1.Size = new System.Drawing.Size(52, 20);
+            this.lbStat1.TabIndex = 18;
+            this.lbStat1.Text = "Stat 1";
+            this.lbStat1.Click += new System.EventHandler(this.lbStat1_Click);
             // 
             // hpmax
             // 
@@ -603,7 +607,7 @@
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Location = new System.Drawing.Point(13, 21);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(336, 219);
+            this.groupBox1.Size = new System.Drawing.Size(336, 238);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Move Selected";
@@ -611,7 +615,7 @@
             // cbCarry
             // 
             this.cbCarry.AutoSize = true;
-            this.cbCarry.Location = new System.Drawing.Point(84, 189);
+            this.cbCarry.Location = new System.Drawing.Point(82, 195);
             this.cbCarry.Name = "cbCarry";
             this.cbCarry.Size = new System.Drawing.Size(168, 24);
             this.cbCarry.TabIndex = 13;
@@ -787,19 +791,19 @@
         private System.Windows.Forms.NumericUpDown st4max;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown st4curr;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lbStat4;
         private System.Windows.Forms.NumericUpDown st3max;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown st3curr;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label lbStat3;
         private System.Windows.Forms.NumericUpDown st2max;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown st2curr;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lbStat2;
         private System.Windows.Forms.NumericUpDown st1max;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown st1curr;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lbStat1;
         private System.Windows.Forms.NumericUpDown hpmax;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown hpcurr;
