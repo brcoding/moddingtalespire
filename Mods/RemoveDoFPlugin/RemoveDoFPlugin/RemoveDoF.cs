@@ -5,6 +5,7 @@ using BepInEx;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+
 using UnityEngine.SceneManagement;
 
 namespace RemoveDoFPlugin
@@ -33,6 +34,16 @@ namespace RemoveDoFPlugin
                     var am = SingletonBehaviour<AtmosphereManager>.Instance;
                     var aa = (AtmosphereApplier)am.GetType().GetField("_applier", flags).GetValue(am);
                     var dof = (DepthOfField)aa.GetType().GetField("_depthOfField", flags).GetValue(aa);
+                    var postProcessLayer = Camera.main.GetComponent<PostProcessLayer>();
+                    
+
+                    //PostProcessVolume dv = (PostProcessVolume)aa.GetType().GetField("_dayVolume", flags).GetValue(aa);
+
+                    //dv.enabled = this.dofEnabled;
+                    //PostProcessVolume nv = (PostProcessVolume)aa.GetType().GetField("_nightVolume", flags).GetValue(aa);
+
+                    //nv.enabled = this.dofEnabled;
+
                     dof.enabled.value = this.dofEnabled;
                 }
             }
@@ -48,6 +59,13 @@ namespace RemoveDoFPlugin
         
         void Update()
         {
+            //Shader shader;// = new Shader();
+            //shader = Shader.Find("Hidden/ChromaticAberration");
+            //Material material = new Material(shader);
+            //if (shader != null)
+            //{
+            //    material.SetFloat("_ChromaticAberration", 0f);
+            //}
             if (Input.GetKeyUp(KeyCode.H))
             {
                 ToggleDoF();
