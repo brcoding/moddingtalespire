@@ -3,17 +3,26 @@ from time import sleep
 import json
 
 def ExecuteRemoteFunction(command):
-    print(command)
+    #print(command)
     port = 999
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('127.0.0.1', port))
     s.send(command.encode('utf-8'))
     s.settimeout(10)
-    return s.recv(24576).decode('utf-8')
-    s.close()
+    data = ""
+    while 1:
+        d = s.recv(1024).decode('utf-8')
+        data += d
+        if not d:
+            break
+
+    return data
+    #return s.recv(44576).decode('utf-8')
+    #s.close()
 
 # Retrieves all creatures on the current board
 def GetCreatureList():
+    #print(ExecuteRemoteFunction('GetCreatureList'))
     return json.loads(ExecuteRemoteFunction('GetCreatureList'))
 
 # Gets all creatures controlled by the current player
@@ -50,6 +59,9 @@ def SayText(creatureId, text):
 def Knockdown(creatureId):
     return json.loads(ExecuteRemoteFunction('Knockdown {0}'.format(creatureId)))
 
+def GetCameraLocation():
+    return json.loads(ExecuteRemoteFunction('GetCameraLocation'))
+
 def SetCameraHeight(height, absolute):
     return json.loads(ExecuteRemoteFunction('SetCameraHeight {0},{1}'.format(height, absolute)))
 
@@ -67,6 +79,12 @@ def TiltCamera(tilt, absolute):
 
 def MoveCreature(creatureId, direction, steps=1, pickUp=False):
     return json.loads(ExecuteRemoteFunction('MoveCreature {0},{1},{2},{3}'.format(creatureId, direction, steps, pickUp)))
+
+def CreateSlab(x, y, z, slabText):
+    return json.loads(ExecuteRemoteFunction('CreateSlab {0},{1},{2},{3}'.format(x, y, z, slabText)))
+
+def GetSlabSize(slabText):
+    return json.loads(ExecuteRemoteFunction('GetSlabSize {0}'.format(slabText)))
 
 def GetCreatureIdByAlias(alias):
     for creature in GetCreatureList():

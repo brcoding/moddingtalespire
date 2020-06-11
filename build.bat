@@ -7,6 +7,7 @@ del build\* /q
 msbuild.exe AllPlugins.sln /t:Build /p:Configuration=Release -property:ReferencePath="G:\\Program Files (x86)\\Steam\\steamapps\\common\\TaleSpire\\TaleSpire_Data\\Managed"
 copy Mods\SetInjectionFlag\SetInjectionFlagPlugin\bin\Release\SetInjectionFlagPlugin.dll build\
 copy Mods\RForRotate\RForRotatePlugin\bin\Release\RForRotatePlugin.dll build\
+copy Mods\ShowPosition\ShowPositionPlugin\bin\Release\ShowPositionPlugin.dll build\
 copy Mods\RemoveFogPlugin\RemoveFogPlugin\bin\Release\RemoveFogPlugin.dll build\
 copy Mods\RemoveDoFPlugin\RemoveDoFPlugin\bin\Release\RemoveDoFPlugin.dll build\
 copy Mods\SocketAPI\bin\Release\SocketAPI.dll build\
@@ -42,6 +43,10 @@ del tmp\BepInEx\plugins\SetInjectionFlagPlugin.dll
 copy build\RForRotatePlugin.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\RForRotate-Full.zip
 del tmp\BepInEx\plugins\RForRotatePlugin.dll
+
+copy build\ShowPositionPlugin.dll tmp\BepInEx\plugins\
+powershell Compress-Archive tmp\* build\ShowPosition-Full.zip
+del tmp\BepInEx\plugins\ShowPositionPlugin.dll
 
 copy build\RemoveFogPlugin.dll tmp\BepInEx\plugins\
 powershell Compress-Archive tmp\* build\RemoveFogPlugin-Full.zip

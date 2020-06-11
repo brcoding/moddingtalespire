@@ -1,7 +1,7 @@
-﻿using UnityEngine.Rendering.PostProcessing;
+﻿using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using System.Reflection;
 using TMPro;
-using UnityEngine;
 using BepInEx;
 using UnityEngine.SceneManagement;
 using System;
@@ -15,6 +15,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using DataModel;
 using Unity.Mathematics;
+using System.Collections;
 
 namespace ModdingTales
 {
@@ -56,6 +57,12 @@ namespace ModdingTales
     }
     public class F3
     {
+        public F3(float3 f)
+        {
+            this.x = f.x;
+            this.y = f.y;
+            this.z = f.z;
+        }
         public F3(float x, float y, float z)
         {
             this.x = x;
@@ -86,6 +93,12 @@ namespace ModdingTales
         public string CreatureId;
         public string Text;
     }
+
+    public struct SlabData
+    {
+        public F3 Position;
+        public string SlabText;
+    }
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
@@ -96,7 +109,12 @@ namespace ModdingTales
         public static Dictionary<string, Func<string[], string>> Commands = new Dictionary<string, Func<string[], string>>();
         public static List<MoveAction> currentActions = new List<MoveAction>();
         public static Queue<SayTextData> sayTextQueue = new Queue<SayTextData>();
+        public static Queue<SlabData> slabQueue = new Queue<SlabData>();
         public static string[] customStatNames = new string[4] { "", "", "", "" };
+        public static string slabSizeSlab = "";
+        public static bool slabSizeResponse;
+        public static float3 slabSize;
+        public static Copied beingCopied;
 
         static ModdingUtils()
         {
@@ -110,6 +128,7 @@ namespace ModdingTales
             Commands.Add("Knockdown", Knockdown);
             Commands.Add("SelectCreatureByCreatureId", SelectCreatureByCreatureId);
             Commands.Add("MoveCreature", MoveCreature);
+            Commands.Add("GetCameraLocation", GetCameraLocation);
             Commands.Add("MoveCamera", MoveCamera);
             Commands.Add("SetCameraHeight", SetCameraHeight);
             Commands.Add("RotateCamera", RotateCamera);
@@ -117,6 +136,8 @@ namespace ModdingTales
             Commands.Add("TiltCamera", TiltCamera);
             Commands.Add("SayText", SayText);
             Commands.Add("SetCustomStatName", SetCustomStatName);
+            Commands.Add("CreateSlab", CreateSlab);
+            Commands.Add("GetSlabSize", GetSlabSize);
         }
         static string ExecuteCommand(string command)
         {
@@ -124,8 +145,8 @@ namespace ModdingTales
             {
                 //UnityEngine.Debug.Log("Command: \"" + command + "\"");
                 var parts = command.Split(' ');
-                //UnityEngine.Debug.Log(parts[0].Trim());
-                //UnityEngine.Debug.Log(string.Join(",", Commands.Keys));
+                UnityEngine.Debug.Log(parts[0].Trim());
+                UnityEngine.Debug.Log(string.Join(" ", parts.Skip(1)).Trim().Split(','));
                 return Commands[parts[0].Trim()].Invoke(string.Join(" ", parts.Skip(1)).Trim().Split(','));
 
             }
@@ -133,6 +154,24 @@ namespace ModdingTales
             {
                 return new APIResponse(ex.Message + ex.StackTrace, "Unknown command").ToString();
             }
+        }
+
+        public static byte[] ReceiveAll(this Socket socket)
+        {
+            var buffer = new List<byte>();
+
+            while (socket.Available > 0)
+            {
+                var currByte = new Byte[1];
+                var byteCounter = socket.Receive(currByte, currByte.Length, SocketFlags.None);
+
+                if (byteCounter.Equals(1))
+                {
+                    buffer.Add(currByte[0]);
+                }
+            }
+
+            return buffer.ToArray();
         }
         private static void StartSocketServer()
         {
@@ -145,7 +184,7 @@ namespace ModdingTales
             {
                 int port = 999;
                 UnityEngine.Debug.Log("Starting Modding Socket at 127.0.0.1 and Port: " + port);
-                byte[] buffer = new Byte[1024];
+                //byte[] buffer = new Byte[4096];
                 IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                 Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -162,11 +201,11 @@ namespace ModdingTales
                             Socket socket = listener.Accept();
                             string data = "";
                             //UnityEngine.Debug.Log("Connected");
-
-                            int bytesRec = socket.Receive(buffer);
+                            byte[] buffer = ReceiveAll(socket);
+                            int bytesRec = buffer.Length;
                             data += Encoding.ASCII.GetString(buffer, 0, bytesRec);
 
-                            //UnityEngine.Debug.Log("Command received : " + data);
+                            UnityEngine.Debug.Log("Command received : " + data);
 
                             byte[] cmdResult = Encoding.ASCII.GetBytes(ExecuteCommand(data));
                             
@@ -237,6 +276,46 @@ namespace ModdingTales
             ccd.TorchState = cd.TorchState;
             ccd.ExplicitlyHidden = cd.ExplicitlyHidden;
             return ccd;
+        }
+
+
+        private static string GetSlabSize(string[] input)
+        {
+            return GetSlabSize(input[0]).Result;
+        }
+        
+        public static async Task<string> GetSlabSize(string slabText)
+        {
+            int msPassed = 0;
+            try
+            {
+                slabSizeResponse = false;
+                slabSizeSlab = slabText;
+
+                while (slabSizeResponse == false || msPassed > 1000)
+                {
+                    msPassed++;
+                    await Task.Delay(1);
+                }
+                return JsonConvert.SerializeObject(new F3(slabSize));
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex.Message + ex.StackTrace);
+                return new APIResponse(ex.Message + ex.StackTrace, "Could not get slab size").ToString();
+            }
+        }
+
+        private static string CreateSlab(string[] input)
+        {
+            return CreateSlab(input[0], input[1], input[2], input[3]);
+        }
+
+        public static string CreateSlab(string x, string y, string z, string slabText)
+        {
+            Debug.Log("X:" + x + " y:" + y + " z:" + z + " Slab: " + slabText);
+            slabQueue.Enqueue(new SlabData { Position = new F3(float.Parse(x), float.Parse(y), float.Parse(z)), SlabText = slabText });
+            return new APIResponse("Slab Paste Queued").ToString();
         }
 
         private static string SayText(string[] input)
@@ -354,6 +433,15 @@ namespace ModdingTales
             return new APIResponse("Camera Move successful").ToString();
         }
 
+        private static string GetCameraLocation(string[] input)
+        {
+            return GetCameraLocation();
+        }
+
+        public static string GetCameraLocation()
+        {
+            return JsonConvert.SerializeObject(new F3(CameraController.Position));
+        }
         private static string MoveCamera(string[] input)
         {
             return MoveCamera(input[0], input[1], input[2], input[3]);
@@ -444,6 +532,7 @@ namespace ModdingTales
 
         private static void UpdateMove()
         {
+            RaycastHit[] creatureHits = new RaycastHit[10];
             for (int i = currentActions.Count() - 1; i >= 0; i--)
             {
 
@@ -453,16 +542,21 @@ namespace ModdingTales
                 ma.moveTime += (Time.deltaTime / (ma.steps * 0.6f));
                 currentActions[i] = ma;
 
+                Ray ray = new Ray(currentActions[i].asset.transform.position + new Vector3(0f, 1.5f, 0f), -Vector3.up);
+                int num = Physics.SphereCastNonAlloc(ray, 0.32f, creatureHits, 2f, 2048);
+                Debug.DrawRay(ray.origin, ray.direction * 10f, Color.white);
+                float num2 = Explorer.GetTileHeightAtLocation(currentActions[i].asset.transform.position, 0.4f, 4f);
+
                 var currentPos = Vector3.Lerp(currentActions[i].asset.transform.position, currentActions[i].DestLocation, currentActions[i].moveTime);
 
-                currentPos.y = Explorer.GetTileHeightAtLocation(currentPos, 0.4f) + 1.5f;
+                //currentPos.y = Explorer.GetTileHeightAtLocation(currentPos, 0.4f, 4f) + 0.05f;// + 1.5f;
                 currentActions[i].asset.RotateTowards(currentPos);
                 currentActions[i].asset.MoveTo(currentPos);
                 //Debug.Log("Drop check:" + currentPos + " dest:" + currentActions[i].DestLocation);
                 if (currentPos.x == currentActions[i].DestLocation.x && currentPos.z == currentActions[i].DestLocation.z)
                 {
                     //Debug.Log("Dropping");
-                    currentActions[i].asset.Drop();
+                    currentActions[i].asset.Drop(currentPos, currentPos.y);
                     if (currentActions[i].useHandle)
                     {
                         currentActions[i].handle.Detach();
@@ -514,14 +608,58 @@ namespace ModdingTales
 
                 if (customStatNames[i] != "")
                 {
-                    Debug.Log("Inside statnames");
-                    Debug.Log("Stat " + (i + 1));
+                    //Debug.Log("Inside statnames");
+                    //Debug.Log("Stat " + (i + 1));
                     stat = GetUITextContainsString("Stat " + (i + 1));
                     if (stat)
                     {
-                        Debug.Log("Found stat " + i);
+                        //Debug.Log("Found stat " + i);
                         stat.text = customStatNames[i];
                     }
+                }
+            }
+        }
+
+        public static void UpdateSlab()
+        {
+            while (slabQueue.Count > 0)
+            {
+                var slabToPaste = slabQueue.Dequeue();
+                Debug.Log("Slab:");
+                Debug.Log(slabToPaste);
+                if (BoardSessionManager.Board.PushStringToTsClipboard(slabToPaste.SlabText) == PushStringToTsClipboardResult.Success)
+                {
+                    Copied mostRecentCopied_LocalOnly = BoardSessionManager.Board.GetMostRecentCopied_LocalOnly();
+                    if (mostRecentCopied_LocalOnly != null)
+                    {
+                        Debug.Log("X:" + slabToPaste.Position.x + " y:" + slabToPaste.Position.x + " z:" + slabToPaste.Position.z + " Slab: " + slabToPaste.SlabText);
+                        BoardSessionManager.Board.PasteCopied(new Vector3(slabToPaste.Position.x, slabToPaste.Position.y, slabToPaste.Position.z), 0, 0UL);
+                        //BoardSessionManager.Board.PasteCopied(new Vector3(slabToPaste.Position.x, slabToPaste.Position.y, slabToPaste.Position.z), 0, 0UL);
+                    }
+                }
+            }
+        }
+
+        public static void GetSlabSize()
+        {
+            if (slabSizeSlab != "")
+            {
+                var slabToPaste = slabSizeSlab;// slabQueue.Dequeue();
+                slabSizeSlab = "";
+
+                if (BoardSessionManager.Board.PushStringToTsClipboard(slabToPaste) == PushStringToTsClipboardResult.Success)
+                {
+
+                    Copied mostRecentCopied_LocalOnly = BoardSessionManager.Board.GetMostRecentCopied_LocalOnly();
+                    if (mostRecentCopied_LocalOnly != null)
+                    {
+                        slabSize = mostRecentCopied_LocalOnly.Bounds.size;
+                        slabSizeResponse = true;
+                    }
+                } else
+                {
+                    slabSize = new float3(0, 0, 0);
+                    slabSizeResponse = true;
                 }
             }
         }
@@ -532,6 +670,8 @@ namespace ModdingTales
             UpdateMove();
             UpdateSpeech();
             UpdateCustomStatNames();
+            UpdateSlab();
+            GetSlabSize();
         }
         private static string MoveCreature(string creatureId, string direction, string steps, string carryCreature)
         {
