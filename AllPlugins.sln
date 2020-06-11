@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketAPI", "Mods\SocketAPI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketAPIGUI", "Mods\SocketAPI\SDKandExamples\CSharp\SocketAPIGUI\SocketAPIGUI.csproj", "{58A2C3DA-3DD4-498E-8E82-C6425AD61B56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowPositionPlugin", "Mods\ShowPosition\ShowPositionPlugin\ShowPositionPlugin.csproj", "{F42E699E-3A1C-494C-8B7C-5ADB723C7A42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{58A2C3DA-3DD4-498E-8E82-C6425AD61B56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58A2C3DA-3DD4-498E-8E82-C6425AD61B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58A2C3DA-3DD4-498E-8E82-C6425AD61B56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F42E699E-3A1C-494C-8B7C-5ADB723C7A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F42E699E-3A1C-494C-8B7C-5ADB723C7A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F42E699E-3A1C-494C-8B7C-5ADB723C7A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F42E699E-3A1C-494C-8B7C-5ADB723C7A42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
