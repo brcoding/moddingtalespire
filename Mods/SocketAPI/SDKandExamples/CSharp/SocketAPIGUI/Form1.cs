@@ -34,7 +34,16 @@ namespace SocketAPIGUI
             public string CreatureId { get; set; }
             public string Alias { get; set; }
         }
-
+        public class CustomBoardAssetData
+        {
+            public string GUID { get; set; }
+            public string boardAssetName { get; set; }
+            public string boardAssetDesc { get; set; }
+            public string boardAssetType { get; set; }
+            public string seachString { get; set; }
+            public string boardAssetGroup { get; set; }
+        }
+        public List<CustomBoardAssetData> creatureAssets = new List<CustomBoardAssetData>();
         public List<CustomCreatureData> creatureList = new List<CustomCreatureData>();
         public string SendMessage(string command, string[] msgparams)
         {
@@ -58,24 +67,26 @@ namespace SocketAPIGUI
                     Console.WriteLine("Socket connected to {0}", sender.RemoteEndPoint.ToString());
 
                     // Encode the data string into a byte array.  
-                    byte[] msg = Encoding.ASCII.GetBytes(command + " " + string.Join(",", msgparams));
+                    byte[] msg = Encoding.UTF8.GetBytes(command + " " + string.Join(",", msgparams));
 
                     // Send the data through the socket.  
                     int bytesSent = sender.Send(msg);
-
+                    Console.WriteLine("Bytes sent:" + bytesSent.ToString());
+                    Console.WriteLine("Command Sent: " + Encoding.UTF8.GetString(msg, 0, bytesSent));
                     sender.ReceiveTimeout = 3000;
                     // Receive the response from the remote device.  
                     string data = "";
                     int bytesRec = 0;
-
-                    while (sender.Available == 0)
+                    int sleeps = 0;
+                    while (sender.Available == 0 && sleeps < 3000)
                     {
                         System.Threading.Thread.Sleep(1);
+                        sleeps++;
                     }
                     while (sender.Available > 0) 
                     { 
                         bytesRec = sender.Receive(bytes);
-                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        data += Encoding.UTF8.GetString(bytes, 0, bytesRec);
                     }
                     //int bytesRec = sender.Receive(bytes, 0, sender.Available, SocketFlags.None);
                     //int bytesRec = sender.Receive(bytes);
@@ -116,6 +127,7 @@ namespace SocketAPIGUI
             Console.WriteLine(data);
             dynamic json = JsonConvert.DeserializeObject(data);
             creatureList.Clear();
+            
             foreach (dynamic item in json)
             {
                 creatureList.Add(new CustomCreatureData { Alias = (string)item["Alias"], CreatureId = (string)item["CreatureId"] });
@@ -324,6 +336,23 @@ namespace SocketAPIGUI
                 SendMessage("SetCustomStatName", new string[] { "4", lbStat4.Text });
 
             }
+        }
+
+        private void button22_Click(object sender, EventArgs e)
+        {
+            //lbCreatureAssets
+            string data = SendMessage("GetCreatureAssets", new string[0]);
+            Console.WriteLine(data);
+            dynamic json = JsonConvert.DeserializeObject(data);
+            creatureAssets.Clear();
+
+            foreach (dynamic item in json)
+            {
+                creatureAssets.Add(new CustomBoardAssetData { GUID = (string)item["GUID"], boardAssetName = (string)item["boardAssetName"] });
+            }
+            lbCreatureAssets.ValueMember = "GUID";
+            lbCreatureAssets.DisplayMember = "boardAssetName";
+            lbCreatureAssets.DataSource = creatureAssets;
         }
     }
 }

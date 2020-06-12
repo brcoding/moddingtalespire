@@ -86,6 +86,12 @@ def CreateSlab(x, y, z, slabText):
 def GetSlabSize(slabText):
     return json.loads(ExecuteRemoteFunction('GetSlabSize {0}'.format(slabText)))
 
+def GetCreatureAssets():
+    return json.loads(ExecuteRemoteFunction('GetCreatureAssets'))
+
+def AddCreature(nguid, x, y, z, scale, alias, hpcurr, hpmax, stat1curr, stat1max,
+    stat2curr, stat2max, stat3curr, stat3max, stat4curr, stat4max, torch, hidden):
+    return json.loads(ExecuteRemoteFunction('AddCreature {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}'.format(nguid, x, y, z, scale, alias, hpcurr, hpmax, stat1curr, stat1max, stat2curr, stat2max, stat3curr, stat3max, stat4curr, stat4max, torch, hidden)))
 def GetCreatureIdByAlias(alias):
     for creature in GetCreatureList():
         if creature['Alias'].lower() == alias.lower():
