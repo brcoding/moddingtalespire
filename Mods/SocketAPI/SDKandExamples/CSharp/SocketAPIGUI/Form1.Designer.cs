@@ -35,6 +35,8 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.tbSay = new System.Windows.Forms.TextBox();
+            this.button21 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button20 = new System.Windows.Forms.Button();
             this.button19 = new System.Windows.Forms.Button();
@@ -87,8 +89,8 @@
             this.cbEmotes = new System.Windows.Forms.ComboBox();
             this.lbCreatureList = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.button21 = new System.Windows.Forms.Button();
-            this.tbSay = new System.Windows.Forms.TextBox();
+            this.lbCreatureAssets = new System.Windows.Forms.ListBox();
+            this.button22 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -117,7 +119,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1117, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(1453, 33);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -153,9 +155,9 @@
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Location = new System.Drawing.Point(0, 687);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 788);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1117, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1453, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -164,6 +166,8 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button22);
+            this.panel1.Controls.Add(this.lbCreatureAssets);
             this.panel1.Controls.Add(this.tbSay);
             this.panel1.Controls.Add(this.button21);
             this.panel1.Controls.Add(this.groupBox3);
@@ -173,8 +177,25 @@
             this.panel1.Controls.Add(this.cbEmotes);
             this.panel1.Location = new System.Drawing.Point(336, 36);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(769, 629);
+            this.panel1.Size = new System.Drawing.Size(1105, 730);
             this.panel1.TabIndex = 4;
+            // 
+            // tbSay
+            // 
+            this.tbSay.Location = new System.Drawing.Point(375, 402);
+            this.tbSay.Name = "tbSay";
+            this.tbSay.Size = new System.Drawing.Size(237, 26);
+            this.tbSay.TabIndex = 17;
+            // 
+            // button21
+            // 
+            this.button21.Location = new System.Drawing.Point(626, 398);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(75, 35);
+            this.button21.TabIndex = 16;
+            this.button21.Text = "Say";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
             // 
             // groupBox3
             // 
@@ -698,7 +719,7 @@
             this.lbCreatureList.Location = new System.Drawing.Point(12, 80);
             this.lbCreatureList.Name = "lbCreatureList";
             this.lbCreatureList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbCreatureList.Size = new System.Drawing.Size(318, 584);
+            this.lbCreatureList.Size = new System.Drawing.Size(318, 664);
             this.lbCreatureList.TabIndex = 2;
             // 
             // button1
@@ -711,28 +732,33 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button21
+            // lbCreatureAssets
             // 
-            this.button21.Location = new System.Drawing.Point(626, 398);
-            this.button21.Name = "button21";
-            this.button21.Size = new System.Drawing.Size(75, 35);
-            this.button21.TabIndex = 16;
-            this.button21.Text = "Say";
-            this.button21.UseVisualStyleBackColor = true;
-            this.button21.Click += new System.EventHandler(this.button21_Click);
+            this.lbCreatureAssets.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbCreatureAssets.FormattingEnabled = true;
+            this.lbCreatureAssets.ItemHeight = 20;
+            this.lbCreatureAssets.Location = new System.Drawing.Point(775, 44);
+            this.lbCreatureAssets.Name = "lbCreatureAssets";
+            this.lbCreatureAssets.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lbCreatureAssets.Size = new System.Drawing.Size(318, 504);
+            this.lbCreatureAssets.TabIndex = 5;
             // 
-            // tbSay
+            // button22
             // 
-            this.tbSay.Location = new System.Drawing.Point(375, 402);
-            this.tbSay.Name = "tbSay";
-            this.tbSay.Size = new System.Drawing.Size(237, 26);
-            this.tbSay.TabIndex = 17;
+            this.button22.Location = new System.Drawing.Point(775, 0);
+            this.button22.Name = "button22";
+            this.button22.Size = new System.Drawing.Size(211, 38);
+            this.button22.TabIndex = 5;
+            this.button22.Text = "Get Creature Assets";
+            this.button22.UseVisualStyleBackColor = true;
+            this.button22.Click += new System.EventHandler(this.button22_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1117, 709);
+            this.ClientSize = new System.Drawing.Size(1453, 810);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lbCreatureList);
@@ -832,6 +858,8 @@
         private System.Windows.Forms.Button button19;
         private System.Windows.Forms.TextBox tbSay;
         private System.Windows.Forms.Button button21;
+        private System.Windows.Forms.Button button22;
+        private System.Windows.Forms.ListBox lbCreatureAssets;
     }
 }
 

@@ -56,19 +56,89 @@ def spiralPrint(m, n, a, height) :
                 # print(a[i][l], end = " ") 
               
             l += 1
+def addRat(x, y, z):
+    AddCreature("d8c8a8e0-c452-48ad-9ecd-aba5e54cf235", x, y, z, 0, "Test Rat", 10, 10, 10, 10,
+        10, 10, 10, 10, 10, 10, False, False)
+
+def spiralCreature(m, n, a, height) : 
+    k = 0; l = 0
+  
+    ''' k - starting row index 
+        m - ending row index 
+        l - starting column index 
+        n - ending column index 
+        i - iterator '''
+      
+  
+    while (k < m and l < n) : 
+          
+        # Print the first row from 
+        # the remaining rows  
+        for i in range(l, n) : 
+            addRat(k, height, i)
+            sleep(0.05)
+            #print(a[k][i], end = " ") 
+              
+        k += 1
+  
+        # Print the last column from 
+        # the remaining columns  
+        for i in range(k, m) : 
+            addRat(i, height, n - 1)
+            sleep(0.05)
+            # print(a[i][n - 1], end = " ") 
+              
+        n -= 1
+  
+        # Print the last row from 
+        # the remaining rows  
+        if ( k < m) : 
+              
+            for i in range(n - 1, (l - 1), -1) : 
+                addRat(m - 1, height, i)
+                sleep(0.05)
+                # print(a[m - 1][i], end = " ") 
+              
+            m -= 1
+          
+        # Print the first column from 
+        # the remaining columns  
+        if (l < n) : 
+            for i in range(m - 1, k - 1, -1) : 
+                addRat(i, height, l)
+                sleep(0.05)
+                # print(a[i][l], end = " ") 
+              
+            l += 1
   
 
 def main():
+    # print(GetCreatureAssets())
+    # # create giant rat
+    # print(AddCreature("d8c8a8e0-c452-48ad-9ecd-aba5e54cf235", 0, 0.5, 0, 0, "Test Rat", 10, 10, 10, 10,
+    #      10, 10, 10, 10, 10, 10, False, False))
+    # print(AddCreature("d8c8a8e0-c452-48ad-9ecd-aba5e54cf235", 2, 0.5, 0, 0, "Test Rat", 10, 10, 10, 10,
+    #      10, 10, 10, 10, 10, 10, False, False))
+    # print(AddCreature("d8c8a8e0-c452-48ad-9ecd-aba5e54cf235", 4, 0.5, 0, 0, "Test Rat", 10, 10, 10, 10,
+    #      10, 10, 10, 10, 10, 10, False, False))
     #MoveCamera(0, 0, 0, True)
 
-    # Driver Code 
     a = [ [1, 2, 3, 4, 5, 6], 
           [7, 8, 9, 10, 11, 12], 
           [13, 14, 15, 16, 17, 18] ] 
             
     R = 3; C = 6
-    for height in range(0, 20):
-        spiralPrint(R, C, a, height * 0.5) 
+    #for height in range(0, 20):
+    spiralCreature(R, C, a, 0) 
+
+    # # Driver Code 
+    # a = [ [1, 2, 3, 4, 5, 6], 
+    #       [7, 8, 9, 10, 11, 12], 
+    #       [13, 14, 15, 16, 17, 18] ] 
+            
+    # R = 3; C = 6
+    # for height in range(0, 20):
+    #     spiralPrint(R, C, a, height * 0.5) 
     
     #print(CreateSlab(0, 0, 0, wee_block))
     # h = 4

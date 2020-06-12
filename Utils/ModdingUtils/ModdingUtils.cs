@@ -138,6 +138,8 @@ namespace ModdingTales
             Commands.Add("SetCustomStatName", SetCustomStatName);
             Commands.Add("CreateSlab", CreateSlab);
             Commands.Add("GetSlabSize", GetSlabSize);
+            Commands.Add("GetCreatureAssets", GetCreatureAssets);
+            Commands.Add("AddCreature", AddCreature);
         }
         static string ExecuteCommand(string command)
         {
@@ -159,7 +161,12 @@ namespace ModdingTales
         public static byte[] ReceiveAll(this Socket socket)
         {
             var buffer = new List<byte>();
-
+            int sleeps = 0;
+            while (socket.Available == 0 && sleeps < 3000)
+            {
+                System.Threading.Thread.Sleep(1);
+                sleeps++;
+            }
             while (socket.Available > 0)
             {
                 var currByte = new Byte[1];
@@ -203,12 +210,13 @@ namespace ModdingTales
                             //UnityEngine.Debug.Log("Connected");
                             byte[] buffer = ReceiveAll(socket);
                             int bytesRec = buffer.Length;
-                            data += Encoding.ASCII.GetString(buffer, 0, bytesRec);
+                            data += Encoding.UTF8.GetString(buffer, 0, bytesRec);
 
-                            UnityEngine.Debug.Log("Command received : " + data);
+                            Debug.Log("Command received : " + data);
+                            Debug.Log("Buffer Len:" + bytesRec.ToString());
 
-                            byte[] cmdResult = Encoding.ASCII.GetBytes(ExecuteCommand(data));
-                            
+                            byte[] cmdResult = Encoding.UTF8.GetBytes(ExecuteCommand(data));
+                            Debug.Log("Command Result:" + Encoding.UTF8.GetString(cmdResult, 0, cmdResult.Length));
                             socket.Send(cmdResult);
                             
                             socket.Shutdown(SocketShutdown.Both);
@@ -231,7 +239,15 @@ namespace ModdingTales
             return GetPlayerControlledList();
         }
  
-
+        public struct CustomBoardAssetData
+        {
+            public string GUID;
+            public string boardAssetName;
+            public string boardAssetDesc;
+            public string boardAssetType;
+            public string seachString;
+            public string boardAssetGroup;
+        }
         public struct CustomCreatureData
         {
 
@@ -304,6 +320,84 @@ namespace ModdingTales
                 Debug.Log(ex.Message + ex.StackTrace);
                 return new APIResponse(ex.Message + ex.StackTrace, "Could not get slab size").ToString();
             }
+        }
+
+        private static string GetCreatureAssets(string[] input)
+        {
+            return GetCreatureAssets();
+        }
+
+        public static string GetCreatureAssets()
+        {
+            //BoardAssetDatabase.
+            //private static BoardAssetLookup _lookup = new BoardAssetLookup();
+            //new NGuid(this.boardAssetFolder.files[k].GUID)
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+            List<CustomBoardAssetData> cbad = new List<CustomBoardAssetData>();
+
+            DictionaryList<NGuid, BoardAssetData> b = (DictionaryList<NGuid, BoardAssetData>)typeof(BoardAssetDatabase).GetField("_lookup", flags).GetValue(null);
+            
+            foreach (BoardAssetData bad in b.Values)
+            {
+                if (bad.boardAssetType != "CREATURE")
+                {
+                    continue;
+                }
+                cbad.Add(new CustomBoardAssetData { 
+                    GUID = bad.GUID,  
+                    boardAssetDesc = bad.boardAssetDesc,
+                    boardAssetGroup = bad.boardAssetGroup,
+                    boardAssetName = bad.boardAssetName,
+                    boardAssetType = bad.boardAssetType,
+                    seachString = bad.seachString
+                });
+            }
+            return JsonConvert.SerializeObject(cbad);
+            //return new APIResponse("Slab Paste Queued").ToString();
+        }
+
+        private static string AddCreature(string[] input)
+        {
+            return AddCreature(input[0], input[1], input[2], input[3], input[4], input[5], input[6], 
+                input[7], input[8], input[9], input[10], input[11], input[12], input[13], input[14], 
+                input[15], input[16], input[17]);
+        }
+        public static CreaturePreviewBoardAsset spawnCreature = null;
+        public static float3 spawnCreaturePos;
+
+        public static string AddCreature(string nguid, string x, string y, string z, string scale, string alias, string hpcurr, string hpmax, string stat1curr, string stat1max,
+            string stat2curr, string stat2max, string stat3curr, string stat3max, string stat4curr, string stat4max, string torch, string hidden)
+        {
+            float3 pos = math.float3(float.Parse(x), float.Parse(y), float.Parse(z));
+            spawnCreaturePos = pos;
+            //Slot sprefab = new Slot();
+            //GameObject go = new GameObject("newslut");
+            //SpawnFactory<Slot> slotFactory = new SpawnFactory<Slot>(sprefab, go.transform, 10, true, null);
+            //Slot slot = slotFactory.HireItem(false);
+            //slot.transform.localPosition = pos;
+            //slot.gameObject.SetActive(true);
+            //slot.SetData(new NGuid(nguid));
+            //slot.Spawn();
+
+            //(NGuid boardAssetGuid, NGuid creatureId, float3 position, quaternion rotation, float scale = 0, 
+            //string alias = null, string avatarThumbnailUrl = null, Color[] colors = null, string inventory = null, 
+            //CreatureStat hp = default, CreatureStat stat0 = default, CreatureStat stat1 = default, CreatureStat stat2 = default, 
+            //CreatureStat stat3 = default, bool torchState = false, NGuid uniqueId = default, bool explicitlyHidden = false);
+
+
+            CreatureData data = new CreatureData(new NGuid(nguid), NGuid.Empty,
+                    math.float3(float.Parse(x), float.Parse(y), float.Parse(z)), quaternion.identity, float.Parse(scale), alias, null, null, null,
+                    new CreatureStat(float.Parse(hpcurr), float.Parse(hpmax)), new CreatureStat(float.Parse(stat1curr), float.Parse(stat1max)),
+                    new CreatureStat(float.Parse(stat2curr), float.Parse(stat2max)), new CreatureStat(float.Parse(stat3curr), float.Parse(stat3max)),
+                    new CreatureStat(float.Parse(stat4curr), float.Parse(stat4max)), bool.Parse(torch), default(NGuid), bool.Parse(hidden));
+            spawnCreature = CreaturePreviewBoardAsset.Spawn(data, pos, quaternion.identity);
+            spawnCreature.Drop(math.float3(float.Parse(x), float.Parse(y), float.Parse(z)), float.Parse(y));
+
+            //
+            //Debug.Log("X:" + x + " y:" + y + " z:" + z + " guid: " + nguid);
+            //CreatureManager.AddCreature(data, math.float3(float.Parse(x), float.Parse(y), float.Parse(z)), quaternion.identity);
+            //slabQueue.Enqueue(new SlabData { Position = new F3(float.Parse(x), float.Parse(y), float.Parse(z)), SlabText = slabText });
+            return new APIResponse("Creature Added").ToString();
         }
 
         private static string CreateSlab(string[] input)
@@ -667,6 +761,12 @@ namespace ModdingTales
         // This only needs to be called from update if you are using the socket API or MoveCharacter calls.
         public static void OnUpdate()
         {
+            if (spawnCreature != null)
+            {
+                CreatureManager.AddCreature(spawnCreature.CreatureData, spawnCreaturePos, quaternion.identity);
+                spawnCreature.DeleteAsset();
+                spawnCreature = null;
+            }
             UpdateMove();
             UpdateSpeech();
             UpdateCustomStatNames();
