@@ -140,6 +140,7 @@ namespace ModdingTales
             Commands.Add("GetSlabSize", GetSlabSize);
             Commands.Add("GetCreatureAssets", GetCreatureAssets);
             Commands.Add("AddCreature", AddCreature);
+            Commands.Add("KillCreature", KillCreature);
         }
         static string ExecuteCommand(string command)
         {
@@ -356,6 +357,26 @@ namespace ModdingTales
             //return new APIResponse("Slab Paste Queued").ToString();
         }
 
+        private static string KillCreature(string[] input)
+        {
+            return KillCreature(input[0]);
+        }
+
+        public static string KillCreature(string creatureId)
+        {
+            CreatureBoardAsset creatureBoardAsset;
+            if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(new NGuid(creatureId), out creatureBoardAsset))
+            {
+                Creature creature = creatureBoardAsset.Creature;
+                creature.BoardAsset.RequestDelete();
+                return new APIResponse("Delete request successful").ToString(); ;
+            }
+            else
+            {
+                return new APIResponse("Failed to delete").ToString();
+            }
+        }
+        
         private static string AddCreature(string[] input)
         {
             return AddCreature(input[0], input[1], input[2], input[3], input[4], input[5], input[6], 
@@ -370,20 +391,6 @@ namespace ModdingTales
         {
             float3 pos = math.float3(float.Parse(x), float.Parse(y), float.Parse(z));
             spawnCreaturePos = pos;
-            //Slot sprefab = new Slot();
-            //GameObject go = new GameObject("newslut");
-            //SpawnFactory<Slot> slotFactory = new SpawnFactory<Slot>(sprefab, go.transform, 10, true, null);
-            //Slot slot = slotFactory.HireItem(false);
-            //slot.transform.localPosition = pos;
-            //slot.gameObject.SetActive(true);
-            //slot.SetData(new NGuid(nguid));
-            //slot.Spawn();
-
-            //(NGuid boardAssetGuid, NGuid creatureId, float3 position, quaternion rotation, float scale = 0, 
-            //string alias = null, string avatarThumbnailUrl = null, Color[] colors = null, string inventory = null, 
-            //CreatureStat hp = default, CreatureStat stat0 = default, CreatureStat stat1 = default, CreatureStat stat2 = default, 
-            //CreatureStat stat3 = default, bool torchState = false, NGuid uniqueId = default, bool explicitlyHidden = false);
-
 
             CreatureData data = new CreatureData(new NGuid(nguid), NGuid.Empty,
                     math.float3(float.Parse(x), float.Parse(y), float.Parse(z)), quaternion.identity, float.Parse(scale), alias, null, null, null,
@@ -393,10 +400,6 @@ namespace ModdingTales
             spawnCreature = CreaturePreviewBoardAsset.Spawn(data, pos, quaternion.identity);
             spawnCreature.Drop(math.float3(float.Parse(x), float.Parse(y), float.Parse(z)), float.Parse(y));
 
-            //
-            //Debug.Log("X:" + x + " y:" + y + " z:" + z + " guid: " + nguid);
-            //CreatureManager.AddCreature(data, math.float3(float.Parse(x), float.Parse(y), float.Parse(z)), quaternion.identity);
-            //slabQueue.Enqueue(new SlabData { Position = new F3(float.Parse(x), float.Parse(y), float.Parse(z)), SlabText = slabText });
             return new APIResponse("Creature Added").ToString();
         }
 
@@ -534,7 +537,7 @@ namespace ModdingTales
 
         public static string GetCameraLocation()
         {
-            return JsonConvert.SerializeObject(new F3(CameraController.Position));
+            return JsonConvert.SerializeObject(new F3(CameraController.Position.x, CameraController.CameraHeight, CameraController.Position.z));
         }
         private static string MoveCamera(string[] input)
         {

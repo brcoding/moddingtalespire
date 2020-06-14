@@ -35,6 +35,9 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button23 = new System.Windows.Forms.Button();
+            this.button22 = new System.Windows.Forms.Button();
+            this.lbCreatureAssets = new System.Windows.Forms.ListBox();
             this.tbSay = new System.Windows.Forms.TextBox();
             this.button21 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -89,8 +92,9 @@
             this.cbEmotes = new System.Windows.Forms.ComboBox();
             this.lbCreatureList = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.lbCreatureAssets = new System.Windows.Forms.ListBox();
-            this.button22 = new System.Windows.Forms.Button();
+            this.button24 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.spawnNumber = new System.Windows.Forms.NumericUpDown();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -109,6 +113,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.hpmax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hpcurr)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -166,6 +171,9 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.button23);
+            this.panel1.Controls.Add(this.spawnNumber);
             this.panel1.Controls.Add(this.button22);
             this.panel1.Controls.Add(this.lbCreatureAssets);
             this.panel1.Controls.Add(this.tbSay);
@@ -179,6 +187,38 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1105, 730);
             this.panel1.TabIndex = 4;
+            // 
+            // button23
+            // 
+            this.button23.Location = new System.Drawing.Point(897, 670);
+            this.button23.Name = "button23";
+            this.button23.Size = new System.Drawing.Size(196, 38);
+            this.button23.TabIndex = 18;
+            this.button23.Text = "Spawn Selected";
+            this.button23.UseVisualStyleBackColor = true;
+            this.button23.Click += new System.EventHandler(this.button23_Click);
+            // 
+            // button22
+            // 
+            this.button22.Location = new System.Drawing.Point(775, 0);
+            this.button22.Name = "button22";
+            this.button22.Size = new System.Drawing.Size(211, 38);
+            this.button22.TabIndex = 5;
+            this.button22.Text = "Get Creature Assets";
+            this.button22.UseVisualStyleBackColor = true;
+            this.button22.Click += new System.EventHandler(this.button22_Click);
+            // 
+            // lbCreatureAssets
+            // 
+            this.lbCreatureAssets.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbCreatureAssets.FormattingEnabled = true;
+            this.lbCreatureAssets.ItemHeight = 20;
+            this.lbCreatureAssets.Location = new System.Drawing.Point(775, 44);
+            this.lbCreatureAssets.Name = "lbCreatureAssets";
+            this.lbCreatureAssets.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lbCreatureAssets.Size = new System.Drawing.Size(318, 624);
+            this.lbCreatureAssets.TabIndex = 5;
             // 
             // tbSay
             // 
@@ -719,7 +759,7 @@
             this.lbCreatureList.Location = new System.Drawing.Point(12, 80);
             this.lbCreatureList.Name = "lbCreatureList";
             this.lbCreatureList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbCreatureList.Size = new System.Drawing.Size(318, 664);
+            this.lbCreatureList.Size = new System.Drawing.Size(318, 624);
             this.lbCreatureList.TabIndex = 2;
             // 
             // button1
@@ -732,33 +772,43 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // lbCreatureAssets
+            // button24
             // 
-            this.lbCreatureAssets.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.lbCreatureAssets.FormattingEnabled = true;
-            this.lbCreatureAssets.ItemHeight = 20;
-            this.lbCreatureAssets.Location = new System.Drawing.Point(775, 44);
-            this.lbCreatureAssets.Name = "lbCreatureAssets";
-            this.lbCreatureAssets.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbCreatureAssets.Size = new System.Drawing.Size(318, 504);
-            this.lbCreatureAssets.TabIndex = 5;
+            this.button24.Location = new System.Drawing.Point(12, 706);
+            this.button24.Name = "button24";
+            this.button24.Size = new System.Drawing.Size(318, 38);
+            this.button24.TabIndex = 19;
+            this.button24.Text = "Remove Selected";
+            this.button24.UseVisualStyleBackColor = true;
+            this.button24.Click += new System.EventHandler(this.button24_Click);
             // 
-            // button22
+            // label4
             // 
-            this.button22.Location = new System.Drawing.Point(775, 0);
-            this.button22.Name = "button22";
-            this.button22.Size = new System.Drawing.Size(211, 38);
-            this.button22.TabIndex = 5;
-            this.button22.Text = "Get Creature Assets";
-            this.button22.UseVisualStyleBackColor = true;
-            this.button22.Click += new System.EventHandler(this.button22_Click);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(782, 679);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(42, 20);
+            this.label4.TabIndex = 27;
+            this.label4.Text = "Num";
+            // 
+            // spawnNumber
+            // 
+            this.spawnNumber.Location = new System.Drawing.Point(830, 677);
+            this.spawnNumber.Name = "spawnNumber";
+            this.spawnNumber.Size = new System.Drawing.Size(61, 26);
+            this.spawnNumber.TabIndex = 26;
+            this.spawnNumber.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1453, 810);
+            this.Controls.Add(this.button24);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lbCreatureList);
@@ -790,6 +840,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.hpcurr)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -860,6 +911,10 @@
         private System.Windows.Forms.Button button21;
         private System.Windows.Forms.Button button22;
         private System.Windows.Forms.ListBox lbCreatureAssets;
+        private System.Windows.Forms.Button button23;
+        private System.Windows.Forms.Button button24;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown spawnNumber;
     }
 }
 
