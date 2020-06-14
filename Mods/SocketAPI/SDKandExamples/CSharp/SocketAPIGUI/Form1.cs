@@ -123,6 +123,7 @@ namespace SocketAPIGUI
 
         private void button1_Click(object sender, EventArgs e)
         {
+            lbCreatureList.DataSource = null;
             string data = SendMessage("GetCreatureList", new string[0]);
             Console.WriteLine(data);
             dynamic json = JsonConvert.DeserializeObject(data);
@@ -340,7 +341,7 @@ namespace SocketAPIGUI
 
         private void button22_Click(object sender, EventArgs e)
         {
-            //lbCreatureAssets
+            lbCreatureAssets.DataSource = null;
             string data = SendMessage("GetCreatureAssets", new string[0]);
             Console.WriteLine(data);
             dynamic json = JsonConvert.DeserializeObject(data);
@@ -353,6 +354,40 @@ namespace SocketAPIGUI
             lbCreatureAssets.ValueMember = "GUID";
             lbCreatureAssets.DisplayMember = "boardAssetName";
             lbCreatureAssets.DataSource = creatureAssets;
+        }
+
+        private void button23_Click(object sender, EventArgs e)
+        {
+            string data = SendMessage("GetCameraLocation", new string[0]);
+            dynamic json = JsonConvert.DeserializeObject(data);
+            float x = (float)json.x.Value;
+            float y = (float)json.y.Value;
+            float z = (float)json.z.Value;
+            foreach (CustomBoardAssetData cbad in lbCreatureAssets.SelectedItems)
+            {
+                z = (float)json.z.Value;
+                for (int s = 0; s < spawnNumber.Value; s++)
+                {
+                    Console.WriteLine(SendMessage("AddCreature", new string[] { cbad.GUID, x.ToString(), y.ToString(), z.ToString(), "0", "", "10", "10", "10", "10", "10", "10", "10", "10", "10", "10", "False", "False" }));
+                    
+                    if (spawnNumber.Value > 1)
+                    {
+                        z++;
+                    }
+                    System.Threading.Thread.Sleep(300);
+                }
+                x++;
+            }
+        }
+
+        private void button24_Click(object sender, EventArgs e)
+        {
+            foreach (CustomCreatureData ccd in lbCreatureList.SelectedItems)
+            {
+                string data = SendMessage("KillCreature", new string[] { ccd.CreatureId });
+                System.Threading.Thread.Sleep(100);
+            }
+            button1_Click(sender, e);
         }
     }
 }
