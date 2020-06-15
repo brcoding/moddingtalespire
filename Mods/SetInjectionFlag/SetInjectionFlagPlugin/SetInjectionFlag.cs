@@ -3,8 +3,7 @@ using ModdingTales;
 
 namespace PluginUtilities
 {
-    [BepInPlugin("org.generic.plugins.setinjectionflag", "Set Injection Flag Plugin", "1.1.0.0")]
-    [BepInProcess("TaleSpire.exe")]
+    [BepInPlugin("org.generic.plugins.setinjectionflag", "Set Injection Flag Plugin", "1.1.1.0")]
     class SetInjectionFlag : BaseUnityPlugin
     {
         void Awake()

@@ -7,8 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace RemoveFogPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removefog", "Remove Fog Plug-In", "1.1.1.0")]
-    [BepInProcess("TaleSpire.exe")]
+    [BepInPlugin("org.d20armyknife.plugins.removefog", "Remove Fog Plug-In", "1.1.2.0")]
     public class DefogIt: BaseUnityPlugin
     {
 
