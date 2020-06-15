@@ -10,8 +10,7 @@ using UnityEngine.SceneManagement;
 
 namespace RemoveDoFPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.2.0.0")]
-    [BepInProcess("TaleSpire.exe")]
+    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.2.1.0")]
     public class DeDoFIt: BaseUnityPlugin
     {
 

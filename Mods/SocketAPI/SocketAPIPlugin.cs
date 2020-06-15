@@ -3,8 +3,7 @@ using ModdingTales;
 
 namespace SocketAPI
 {
-    [BepInPlugin("org.generic.plugins.socketapi", "Socket API Plugin", "1.2.0.0")]
-    [BepInProcess("TaleSpire.exe")]
+    [BepInPlugin("org.generic.plugins.socketapi", "Socket API Plugin", "1.2.1.0")]
     class SocketAPIPlugin : BaseUnityPlugin
     {
         void Awake()

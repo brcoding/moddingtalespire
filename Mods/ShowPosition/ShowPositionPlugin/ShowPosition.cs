@@ -7,8 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace ShowPosition
 {
-    [BepInPlugin("org.d20armyknife.plugins.showposition", "Show Position Plug-In", "1.0.0.0")]
-    [BepInProcess("TaleSpire.exe")]
+    [BepInPlugin("org.d20armyknife.plugins.showposition", "Show Position Plug-In", "1.1.0.0")]
     public class ShowPositionPlugin: BaseUnityPlugin
     {
 
