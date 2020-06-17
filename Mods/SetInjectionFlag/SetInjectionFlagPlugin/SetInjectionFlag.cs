@@ -8,8 +8,10 @@ namespace PluginUtilities
     {
         void Awake()
         {
+            Logger.LogInfo("In Awake for SetInjectionFlag Plug-in");
+
             UnityEngine.Debug.Log("SetInjectionFlag Plug-in loaded");
-            ModdingUtils.Initialize(this);
+            ModdingUtils.Initialize(this, this.Logger);
         }
     }
 }

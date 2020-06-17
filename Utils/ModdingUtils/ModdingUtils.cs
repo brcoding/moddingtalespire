@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using DataModel;
 using Unity.Mathematics;
 using System.Collections;
+using BepInEx.Logging;
 
 namespace ModdingTales
 {
@@ -102,6 +103,7 @@ namespace ModdingTales
     public static class ModdingUtils
     {
         private static BaseUnityPlugin parentPlugin;
+        private static ManualLogSource parentLogger;
         private static bool serverStarted = false;
         //private static bool movingCreature = false;
         //private static Queue<MoveAction> moveQueue = new Queue<MoveAction>();
@@ -114,7 +116,7 @@ namespace ModdingTales
         public static string slabSizeSlab = "";
         public static bool slabSizeResponse;
         public static float3 slabSize;
-        public static Copied beingCopied;
+        public static Copied beingCopied;        
 
         static ModdingUtils()
         {
@@ -1094,6 +1096,7 @@ namespace ModdingTales
             TextMeshProUGUI[] texts = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>();
             for (int i = 0; i < texts.Length; i++)
             {
+                parentLogger.LogInfo("Found UI" + texts[i].name);
                 if (texts[i].name == name)
                 {
                     return texts[i];
@@ -1107,10 +1110,12 @@ namespace ModdingTales
             return Camera.main.GetComponent<PostProcessLayer>();
         }
 
-        public static void Initialize(BaseUnityPlugin parentPlugin, bool startSocket=false)
+        public static void Initialize(BaseUnityPlugin parentPlugin, ManualLogSource logger, bool startSocket=false)
         {
             AppStateManager.UsingCodeInjection = true;
             ModdingUtils.parentPlugin = parentPlugin;
+            ModdingUtils.parentLogger = logger;
+            parentLogger.LogInfo("Inside initialize");
             SceneManager.sceneLoaded += OnSceneLoaded;
             // By default do not start the socket server. It requires the caller to also call OnUpdate in the plugin update method.
             if (startSocket)
@@ -1121,14 +1126,18 @@ namespace ModdingTales
 
         public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            //UnityEngine.Debug.Log("Loading Scene: " + scene.name);
+            try
+            {
+
+            parentLogger.LogInfo("On Scene Loaded" + scene.name);
+            UnityEngine.Debug.Log("Loading Scene: " + scene.name);
             if (scene.name == "UI") {
                 TextMeshProUGUI betaText = GetUITextByName("BETA");
                 if (betaText)
                 {
                     betaText.text = "INJECTED BUILD - unstable mods";
                 }
-            } else if (scene.name == "Login")
+            } else 
             {
                 TextMeshProUGUI modListText = GetUITextByName("TextMeshPro Text");
                 if (modListText)
@@ -1140,6 +1149,11 @@ namespace ModdingTales
                     }
                     modListText.text += "\n" + bepInPlugin.Name + " - " + bepInPlugin.Version;
                 }
+            }
+            }
+            catch (Exception ex)
+            {
+                parentLogger.LogFatal(ex);
             }
         }
     }

@@ -14,8 +14,10 @@ namespace RForRotate
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
+            Logger.LogInfo("In Awake for R For Rotate Plug-in");
+
             UnityEngine.Debug.Log("R For Rotate Plug-in loaded");
-            ModdingTales.ModdingUtils.Initialize(this);
+            ModdingTales.ModdingUtils.Initialize(this, Logger);
         }
         
         private void RotateSelected(double amount)
