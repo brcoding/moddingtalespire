@@ -14,8 +14,10 @@ namespace ShowPosition
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
+            Logger.LogInfo("In Awake for ShowPosition Plug-in");
+
             UnityEngine.Debug.Log("Show Position Plug-in loaded");
-            ModdingTales.ModdingUtils.Initialize(this);
+            ModdingTales.ModdingUtils.Initialize(this, this.Logger);
         }
         
         void Update()

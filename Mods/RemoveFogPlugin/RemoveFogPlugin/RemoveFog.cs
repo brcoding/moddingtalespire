@@ -14,8 +14,10 @@ namespace RemoveFogPlugin
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
+            Logger.LogInfo("In Awake for Remove Fog Plug-in");
+
             UnityEngine.Debug.Log("Remove Fog Plug-in loaded");
-            ModdingTales.ModdingUtils.Initialize(this);
+            ModdingTales.ModdingUtils.Initialize(this, this.Logger);
         }
 
         private void ToggleFog()

@@ -8,8 +8,10 @@ namespace SocketAPI
     {
         void Awake()
         {
+            Logger.LogInfo("In Awake for SocketAPI Plug-in");
+
             UnityEngine.Debug.Log("SocketAPI Plug-in loaded");
-            ModdingUtils.Initialize(this, true);
+            ModdingUtils.Initialize(this, this.Logger, true);
         }
 
         void Update()
