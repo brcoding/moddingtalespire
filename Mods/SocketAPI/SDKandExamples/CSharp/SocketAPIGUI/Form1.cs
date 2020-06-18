@@ -389,5 +389,34 @@ namespace SocketAPIGUI
             }
             button1_Click(sender, e);
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.Text += " v" + Application.ProductVersion;
+        }
+
+        private void button25_Click(object sender, EventArgs e)
+        {
+            if (lbCreatureList.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("You must select one or more creatures to modify their hitpoints.");
+                return;
+            }
+            hpcurr.Value += numHpMod.Value;
+            // set the value for the selected creature
+            button7_Click(sender, e);
+        }
+
+        private void button26_Click(object sender, EventArgs e)
+        {
+            if (lbCreatureList.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("You must select one or more creatures to modify their hitpoints.");
+                return;
+            }
+            hpcurr.Value -= numHpMod.Value;
+            // set the value for the selected creature
+            button7_Click(sender, e);
+        }
     }
 }
