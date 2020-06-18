@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace ShowPosition
 {
-    [BepInPlugin("org.d20armyknife.plugins.showposition", "Show Position Plug-In", "1.2.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.showposition", "Show Position Plug-In", "1.2.1.0")]
     public class ShowPositionPlugin: BaseUnityPlugin
     {
 
