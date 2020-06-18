@@ -35,7 +35,9 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
             this.button23 = new System.Windows.Forms.Button();
+            this.spawnNumber = new System.Windows.Forms.NumericUpDown();
             this.button22 = new System.Windows.Forms.Button();
             this.lbCreatureAssets = new System.Windows.Forms.ListBox();
             this.tbSay = new System.Windows.Forms.TextBox();
@@ -93,10 +95,12 @@
             this.lbCreatureList = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button24 = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.spawnNumber = new System.Windows.Forms.NumericUpDown();
+            this.button25 = new System.Windows.Forms.Button();
+            this.button26 = new System.Windows.Forms.Button();
+            this.numHpMod = new System.Windows.Forms.NumericUpDown();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.camMoveZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.camMoveX)).BeginInit();
@@ -113,7 +117,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.hpmax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hpcurr)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHpMod)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -188,6 +192,15 @@
             this.panel1.Size = new System.Drawing.Size(1105, 730);
             this.panel1.TabIndex = 4;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(782, 679);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(42, 20);
+            this.label4.TabIndex = 27;
+            this.label4.Text = "Num";
+            // 
             // button23
             // 
             this.button23.Location = new System.Drawing.Point(897, 670);
@@ -197,6 +210,18 @@
             this.button23.Text = "Spawn Selected";
             this.button23.UseVisualStyleBackColor = true;
             this.button23.Click += new System.EventHandler(this.button23_Click);
+            // 
+            // spawnNumber
+            // 
+            this.spawnNumber.Location = new System.Drawing.Point(830, 677);
+            this.spawnNumber.Name = "spawnNumber";
+            this.spawnNumber.Size = new System.Drawing.Size(61, 26);
+            this.spawnNumber.TabIndex = 26;
+            this.spawnNumber.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // button22
             // 
@@ -413,6 +438,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.numHpMod);
+            this.groupBox2.Controls.Add(this.button26);
+            this.groupBox2.Controls.Add(this.button25);
             this.groupBox2.Controls.Add(this.button11);
             this.groupBox2.Controls.Add(this.button10);
             this.groupBox2.Controls.Add(this.button9);
@@ -440,14 +468,14 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(14, 265);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(336, 289);
+            this.groupBox2.Size = new System.Drawing.Size(336, 413);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Stats";
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(261, 231);
+            this.button11.Location = new System.Drawing.Point(270, 273);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(55, 35);
             this.button11.TabIndex = 37;
@@ -457,7 +485,7 @@
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(261, 187);
+            this.button10.Location = new System.Drawing.Point(270, 229);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(55, 35);
             this.button10.TabIndex = 36;
@@ -467,7 +495,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(261, 143);
+            this.button9.Location = new System.Drawing.Point(270, 185);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(55, 35);
             this.button9.TabIndex = 35;
@@ -477,7 +505,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(261, 99);
+            this.button8.Location = new System.Drawing.Point(270, 141);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(55, 35);
             this.button8.TabIndex = 34;
@@ -497,7 +525,7 @@
             // 
             // st4max
             // 
-            this.st4max.Location = new System.Drawing.Point(182, 236);
+            this.st4max.Location = new System.Drawing.Point(191, 278);
             this.st4max.Name = "st4max";
             this.st4max.Size = new System.Drawing.Size(67, 26);
             this.st4max.TabIndex = 33;
@@ -505,7 +533,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(163, 236);
+            this.label9.Location = new System.Drawing.Point(172, 278);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(13, 20);
             this.label9.TabIndex = 32;
@@ -513,7 +541,7 @@
             // 
             // st4curr
             // 
-            this.st4curr.Location = new System.Drawing.Point(89, 236);
+            this.st4curr.Location = new System.Drawing.Point(98, 278);
             this.st4curr.Name = "st4curr";
             this.st4curr.Size = new System.Drawing.Size(67, 26);
             this.st4curr.TabIndex = 31;
@@ -521,7 +549,7 @@
             // lbStat4
             // 
             this.lbStat4.AutoSize = true;
-            this.lbStat4.Location = new System.Drawing.Point(6, 238);
+            this.lbStat4.Location = new System.Drawing.Point(15, 280);
             this.lbStat4.Name = "lbStat4";
             this.lbStat4.Size = new System.Drawing.Size(52, 20);
             this.lbStat4.TabIndex = 30;
@@ -530,7 +558,7 @@
             // 
             // st3max
             // 
-            this.st3max.Location = new System.Drawing.Point(182, 192);
+            this.st3max.Location = new System.Drawing.Point(191, 234);
             this.st3max.Name = "st3max";
             this.st3max.Size = new System.Drawing.Size(67, 26);
             this.st3max.TabIndex = 29;
@@ -538,7 +566,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(163, 192);
+            this.label7.Location = new System.Drawing.Point(172, 234);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(13, 20);
             this.label7.TabIndex = 28;
@@ -546,7 +574,7 @@
             // 
             // st3curr
             // 
-            this.st3curr.Location = new System.Drawing.Point(89, 192);
+            this.st3curr.Location = new System.Drawing.Point(98, 234);
             this.st3curr.Name = "st3curr";
             this.st3curr.Size = new System.Drawing.Size(67, 26);
             this.st3curr.TabIndex = 27;
@@ -554,7 +582,7 @@
             // lbStat3
             // 
             this.lbStat3.AutoSize = true;
-            this.lbStat3.Location = new System.Drawing.Point(6, 194);
+            this.lbStat3.Location = new System.Drawing.Point(15, 236);
             this.lbStat3.Name = "lbStat3";
             this.lbStat3.Size = new System.Drawing.Size(52, 20);
             this.lbStat3.TabIndex = 26;
@@ -563,7 +591,7 @@
             // 
             // st2max
             // 
-            this.st2max.Location = new System.Drawing.Point(182, 148);
+            this.st2max.Location = new System.Drawing.Point(191, 190);
             this.st2max.Name = "st2max";
             this.st2max.Size = new System.Drawing.Size(67, 26);
             this.st2max.TabIndex = 25;
@@ -571,7 +599,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(163, 148);
+            this.label5.Location = new System.Drawing.Point(172, 190);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 20);
             this.label5.TabIndex = 24;
@@ -579,7 +607,7 @@
             // 
             // st2curr
             // 
-            this.st2curr.Location = new System.Drawing.Point(89, 148);
+            this.st2curr.Location = new System.Drawing.Point(98, 190);
             this.st2curr.Name = "st2curr";
             this.st2curr.Size = new System.Drawing.Size(67, 26);
             this.st2curr.TabIndex = 23;
@@ -587,7 +615,7 @@
             // lbStat2
             // 
             this.lbStat2.AutoSize = true;
-            this.lbStat2.Location = new System.Drawing.Point(6, 150);
+            this.lbStat2.Location = new System.Drawing.Point(15, 192);
             this.lbStat2.Name = "lbStat2";
             this.lbStat2.Size = new System.Drawing.Size(52, 20);
             this.lbStat2.TabIndex = 22;
@@ -596,7 +624,7 @@
             // 
             // st1max
             // 
-            this.st1max.Location = new System.Drawing.Point(182, 104);
+            this.st1max.Location = new System.Drawing.Point(191, 146);
             this.st1max.Name = "st1max";
             this.st1max.Size = new System.Drawing.Size(67, 26);
             this.st1max.TabIndex = 21;
@@ -604,7 +632,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(163, 104);
+            this.label3.Location = new System.Drawing.Point(172, 146);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(13, 20);
             this.label3.TabIndex = 20;
@@ -612,7 +640,7 @@
             // 
             // st1curr
             // 
-            this.st1curr.Location = new System.Drawing.Point(89, 104);
+            this.st1curr.Location = new System.Drawing.Point(98, 146);
             this.st1curr.Name = "st1curr";
             this.st1curr.Size = new System.Drawing.Size(67, 26);
             this.st1curr.TabIndex = 19;
@@ -620,7 +648,7 @@
             // lbStat1
             // 
             this.lbStat1.AutoSize = true;
-            this.lbStat1.Location = new System.Drawing.Point(6, 106);
+            this.lbStat1.Location = new System.Drawing.Point(15, 148);
             this.lbStat1.Name = "lbStat1";
             this.lbStat1.Size = new System.Drawing.Size(52, 20);
             this.lbStat1.TabIndex = 18;
@@ -782,26 +810,34 @@
             this.button24.UseVisualStyleBackColor = true;
             this.button24.Click += new System.EventHandler(this.button24_Click);
             // 
-            // label4
+            // button25
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(782, 679);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(42, 20);
-            this.label4.TabIndex = 27;
-            this.label4.Text = "Num";
+            this.button25.BackColor = System.Drawing.Color.LightGreen;
+            this.button25.Location = new System.Drawing.Point(191, 87);
+            this.button25.Name = "button25";
+            this.button25.Size = new System.Drawing.Size(55, 35);
+            this.button25.TabIndex = 38;
+            this.button25.Text = "Heal";
+            this.button25.UseVisualStyleBackColor = false;
+            this.button25.Click += new System.EventHandler(this.button25_Click);
             // 
-            // spawnNumber
+            // button26
             // 
-            this.spawnNumber.Location = new System.Drawing.Point(830, 677);
-            this.spawnNumber.Name = "spawnNumber";
-            this.spawnNumber.Size = new System.Drawing.Size(61, 26);
-            this.spawnNumber.TabIndex = 26;
-            this.spawnNumber.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.button26.BackColor = System.Drawing.Color.PaleVioletRed;
+            this.button26.Location = new System.Drawing.Point(261, 87);
+            this.button26.Name = "button26";
+            this.button26.Size = new System.Drawing.Size(55, 35);
+            this.button26.TabIndex = 39;
+            this.button26.Text = "Hurt";
+            this.button26.UseVisualStyleBackColor = false;
+            this.button26.Click += new System.EventHandler(this.button26_Click);
+            // 
+            // numHpMod
+            // 
+            this.numHpMod.Location = new System.Drawing.Point(89, 92);
+            this.numHpMod.Name = "numHpMod";
+            this.numHpMod.Size = new System.Drawing.Size(67, 26);
+            this.numHpMod.TabIndex = 40;
             // 
             // Form1
             // 
@@ -817,10 +853,12 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "ModdingTales Socket API GUI";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.camMoveZ)).EndInit();
@@ -840,7 +878,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.hpcurr)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHpMod)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -915,6 +953,9 @@
         private System.Windows.Forms.Button button24;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown spawnNumber;
+        private System.Windows.Forms.NumericUpDown numHpMod;
+        private System.Windows.Forms.Button button26;
+        private System.Windows.Forms.Button button25;
     }
 }
 

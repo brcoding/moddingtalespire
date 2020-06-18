@@ -1096,7 +1096,6 @@ namespace ModdingTales
             TextMeshProUGUI[] texts = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>();
             for (int i = 0; i < texts.Length; i++)
             {
-                parentLogger.LogInfo("Found UI" + texts[i].name);
                 if (texts[i].name == name)
                 {
                     return texts[i];
