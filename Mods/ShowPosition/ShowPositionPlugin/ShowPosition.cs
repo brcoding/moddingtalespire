@@ -35,6 +35,9 @@ namespace ShowPosition
                 Vector3 pickupLocation = (Vector3)typeof(CreatureMoveBoardTool).GetField("_pickUpLocation", flags).GetValue(moveBoard);
                 float distance = Vector3.Distance(pickupLocation, indicator.position);
                 MouseManager.ShowMouseText(String.Format("{0:0}", distance), true);
+
+                TextMeshProUGUI cursorText = (TextMeshProUGUI)typeof(MouseManager).GetField("_cursorText", flags).GetValue(MouseManager.Instance);// this._cursorText
+                cursorText.fontSize = 24f * GUIManager.GetUIScaleValue();
                 wasShowingMouse = true;
             } else
             {
