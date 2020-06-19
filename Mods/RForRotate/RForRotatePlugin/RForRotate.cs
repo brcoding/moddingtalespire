@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Reflection;
 using BepInEx;
+using ModdingTales;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using UnityEngine.Networking;
+using System.Collections;
+using UnityEngine.UI;
 
 namespace RForRotate
 {
@@ -58,9 +64,86 @@ namespace RForRotate
                 UnityEngine.Debug.Log(ex.Source);
             }
         }
+        private DateTime lastCheck = DateTime.Now;
+        private List<string> seenMessages = new List<string>();
+        //[JsonConverter(typeof(OOBResponseConverter))]
+        public class OOBResponse
+        {
+            public string sessionid { get; set; }
+            public string type { get; set; }
+            public string handoutUrl { get; set; }
+            public string messageid { get; set; }
+            
+        }
+
+        //public Sprite sprite;
+
+        IEnumerator DownloadImage(string MediaUrl)
+        {
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
+                Debug.Log(request.error);
+            else
+            {
+                Debug.Log("Downloaded!");
+                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                Sprite sprite = Sprite.Create(texture,
+                new Rect(0, 0, texture.width, texture.height),
+                Vector2.one / 2);
+
+                //GameObject NewObj = new GameObject("Handout"); //Create the GameObject
+                //Image NewImage = NewObj.AddComponent<Image>(); //Add the Image Component script
+                //NewImage.sprite = sprite; //Set the Sprite of the Image Component on the new GameObject
+                //RectTransform canvas = GameObject.Find("Canvas").GetComponent<RectTransform>();
+                //NewObj.GetComponent<RectTransform>().SetParent(canvas.transform); //Assign the newly created Image GameObject as a Child of the Parent Panel.
+                //NewObj.SetActive(true); //Activate the GameObject
+
+                GameObject go = new GameObject("Handout");
+                Image image = go.AddComponent<Image>();
+                image.sprite = sprite;
+                go.SetActive(true);
+                //Transform t = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>()[0].transform.parent.parent.parent;
+                //t.SetAsLastSibling();
+                //go.transform.SetParent(, true);
+                //Transform t = SingletonBehaviour<GUIManager>.Instance.transform;
+                Canvas canvas = GUIManager.GetCanvas();
+                go.transform.SetParent(canvas.transform, false);
+                //go.transform.SetParent(t);
+                //go.transform.SetAsLastSibling();
+            }
+        }
+
+        public void CheckOOB()
+        {
+            Debug.Log(ModdingUtils.SendOOBMessage("{\"sessionid\": \"abc\", \"type\": \"get\"}"));
+            OOBResponse[] json = JsonConvert.DeserializeObject<OOBResponse[]>(ModdingUtils.SendOOBMessage("{\"sessionid\": \"abc\", \"type\": \"get\"}"));
+            foreach (OOBResponse item in json)
+            {
+                if (!seenMessages.Contains(item.messageid))
+                {
+                    seenMessages.Add(item.messageid);
+                    SystemMessage.DisplayInfoText(item.handoutUrl, 2.5f);
+                    StartCoroutine(DownloadImage(item.handoutUrl));
+
+                    
+                }
+            }
+        }
 
         void Update()
         {
+            var diffInSeconds = (DateTime.Now - lastCheck).TotalSeconds;
+            if (diffInSeconds > 3)
+            {
+                lastCheck = DateTime.Now;
+                CheckOOB();
+            }
+            if (Input.GetKeyUp(KeyCode.P))
+            {
+                //Debug.Log("Sending OOB");
+                ModdingUtils.SendOOBMessage("{\"sessionid\": \"abc\", \"type\": \"put\", \"somekey\": \"somevalue\"}");
+            }
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Mouse ScrollWheel") > 0)
             {
                     RotateSelected(90.0);
