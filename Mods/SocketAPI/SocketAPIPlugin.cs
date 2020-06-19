@@ -3,7 +3,7 @@ using ModdingTales;
 
 namespace SocketAPI
 {
-    [BepInPlugin("org.generic.plugins.socketapi", "Socket API Plugin", "1.2.1.0")]
+    [BepInPlugin("org.generic.plugins.socketapi", "Socket API Plugin", "1.3.0.0")]
     class SocketAPIPlugin : BaseUnityPlugin
     {
         void Awake()
