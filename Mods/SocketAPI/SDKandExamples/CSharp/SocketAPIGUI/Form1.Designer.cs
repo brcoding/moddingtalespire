@@ -35,6 +35,10 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button28 = new System.Windows.Forms.Button();
+            this.button27 = new System.Windows.Forms.Button();
+            this.lbParties = new System.Windows.Forms.ListBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button23 = new System.Windows.Forms.Button();
             this.spawnNumber = new System.Windows.Forms.NumericUpDown();
@@ -59,6 +63,9 @@
             this.label11 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.numHpMod = new System.Windows.Forms.NumericUpDown();
+            this.button26 = new System.Windows.Forms.Button();
+            this.button25 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
@@ -95,17 +102,16 @@
             this.lbCreatureList = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button24 = new System.Windows.Forms.Button();
-            this.button25 = new System.Windows.Forms.Button();
-            this.button26 = new System.Windows.Forms.Button();
-            this.numHpMod = new System.Windows.Forms.NumericUpDown();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.camMoveZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.camMoveX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numHpMod)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.st4max)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.st4curr)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.st3max)).BeginInit();
@@ -117,7 +123,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.hpmax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hpcurr)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numHpMod)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -175,6 +180,7 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.groupBox4);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.button23);
             this.panel1.Controls.Add(this.spawnNumber);
@@ -191,6 +197,50 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1105, 730);
             this.panel1.TabIndex = 4;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.button28);
+            this.groupBox4.Controls.Add(this.button27);
+            this.groupBox4.Controls.Add(this.lbParties);
+            this.groupBox4.Location = new System.Drawing.Point(13, 13);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(336, 370);
+            this.groupBox4.TabIndex = 28;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Parties";
+            // 
+            // button28
+            // 
+            this.button28.Location = new System.Drawing.Point(149, 329);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(176, 35);
+            this.button28.TabIndex = 17;
+            this.button28.Text = "Remove Selected";
+            this.button28.UseVisualStyleBackColor = true;
+            this.button28.Click += new System.EventHandler(this.button28_Click);
+            // 
+            // button27
+            // 
+            this.button27.Location = new System.Drawing.Point(6, 329);
+            this.button27.Name = "button27";
+            this.button27.Size = new System.Drawing.Size(137, 35);
+            this.button27.TabIndex = 16;
+            this.button27.Text = "Create Party";
+            this.button27.UseVisualStyleBackColor = true;
+            this.button27.Click += new System.EventHandler(this.button27_Click);
+            // 
+            // lbParties
+            // 
+            this.lbParties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbParties.FormattingEnabled = true;
+            this.lbParties.ItemHeight = 20;
+            this.lbParties.Location = new System.Drawing.Point(7, 31);
+            this.lbParties.Name = "lbParties";
+            this.lbParties.Size = new System.Drawing.Size(318, 284);
+            this.lbParties.TabIndex = 3;
+            this.lbParties.SelectedIndexChanged += new System.EventHandler(this.lbParties_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -247,14 +297,14 @@
             // 
             // tbSay
             // 
-            this.tbSay.Location = new System.Drawing.Point(375, 402);
+            this.tbSay.Location = new System.Drawing.Point(392, 361);
             this.tbSay.Name = "tbSay";
             this.tbSay.Size = new System.Drawing.Size(237, 26);
             this.tbSay.TabIndex = 17;
             // 
             // button21
             // 
-            this.button21.Location = new System.Drawing.Point(626, 398);
+            this.button21.Location = new System.Drawing.Point(643, 357);
             this.button21.Name = "button21";
             this.button21.Size = new System.Drawing.Size(75, 35);
             this.button21.TabIndex = 16;
@@ -279,7 +329,7 @@
             this.groupBox3.Controls.Add(this.button15);
             this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.trackBar1);
-            this.groupBox3.Location = new System.Drawing.Point(356, 30);
+            this.groupBox3.Location = new System.Drawing.Point(362, 431);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(394, 290);
             this.groupBox3.TabIndex = 15;
@@ -466,12 +516,41 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.hpcurr);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(14, 265);
+            this.groupBox2.Location = new System.Drawing.Point(13, 389);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(336, 413);
+            this.groupBox2.Size = new System.Drawing.Size(336, 328);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Stats";
+            // 
+            // numHpMod
+            // 
+            this.numHpMod.Location = new System.Drawing.Point(89, 92);
+            this.numHpMod.Name = "numHpMod";
+            this.numHpMod.Size = new System.Drawing.Size(67, 26);
+            this.numHpMod.TabIndex = 40;
+            // 
+            // button26
+            // 
+            this.button26.BackColor = System.Drawing.Color.PaleVioletRed;
+            this.button26.Location = new System.Drawing.Point(261, 87);
+            this.button26.Name = "button26";
+            this.button26.Size = new System.Drawing.Size(55, 35);
+            this.button26.TabIndex = 39;
+            this.button26.Text = "Hurt";
+            this.button26.UseVisualStyleBackColor = false;
+            this.button26.Click += new System.EventHandler(this.button26_Click);
+            // 
+            // button25
+            // 
+            this.button25.BackColor = System.Drawing.Color.LightGreen;
+            this.button25.Location = new System.Drawing.Point(191, 87);
+            this.button25.Name = "button25";
+            this.button25.Size = new System.Drawing.Size(55, 35);
+            this.button25.TabIndex = 38;
+            this.button25.Text = "Heal";
+            this.button25.UseVisualStyleBackColor = false;
+            this.button25.Click += new System.EventHandler(this.button25_Click);
             // 
             // button11
             // 
@@ -694,9 +773,9 @@
             this.groupBox1.Controls.Add(this.button4);
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Location = new System.Drawing.Point(13, 21);
+            this.groupBox1.Location = new System.Drawing.Point(362, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(336, 238);
+            this.groupBox1.Size = new System.Drawing.Size(394, 238);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Move Selected";
@@ -757,7 +836,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(626, 339);
+            this.button6.Location = new System.Drawing.Point(643, 298);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(75, 35);
             this.button6.TabIndex = 8;
@@ -773,7 +852,7 @@
             "TLA_Action_Knockdown",
             "TLA_Wiggle",
             "TLA_MeleeAttack"});
-            this.cbEmotes.Location = new System.Drawing.Point(375, 343);
+            this.cbEmotes.Location = new System.Drawing.Point(392, 302);
             this.cbEmotes.Name = "cbEmotes";
             this.cbEmotes.Size = new System.Drawing.Size(237, 28);
             this.cbEmotes.TabIndex = 7;
@@ -789,6 +868,7 @@
             this.lbCreatureList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lbCreatureList.Size = new System.Drawing.Size(318, 624);
             this.lbCreatureList.TabIndex = 2;
+            this.lbCreatureList.SelectedIndexChanged += new System.EventHandler(this.lbCreatureList_SelectedIndexChanged);
             // 
             // button1
             // 
@@ -810,35 +890,6 @@
             this.button24.UseVisualStyleBackColor = true;
             this.button24.Click += new System.EventHandler(this.button24_Click);
             // 
-            // button25
-            // 
-            this.button25.BackColor = System.Drawing.Color.LightGreen;
-            this.button25.Location = new System.Drawing.Point(191, 87);
-            this.button25.Name = "button25";
-            this.button25.Size = new System.Drawing.Size(55, 35);
-            this.button25.TabIndex = 38;
-            this.button25.Text = "Heal";
-            this.button25.UseVisualStyleBackColor = false;
-            this.button25.Click += new System.EventHandler(this.button25_Click);
-            // 
-            // button26
-            // 
-            this.button26.BackColor = System.Drawing.Color.PaleVioletRed;
-            this.button26.Location = new System.Drawing.Point(261, 87);
-            this.button26.Name = "button26";
-            this.button26.Size = new System.Drawing.Size(55, 35);
-            this.button26.TabIndex = 39;
-            this.button26.Text = "Hurt";
-            this.button26.UseVisualStyleBackColor = false;
-            this.button26.Click += new System.EventHandler(this.button26_Click);
-            // 
-            // numHpMod
-            // 
-            this.numHpMod.Location = new System.Drawing.Point(89, 92);
-            this.numHpMod.Name = "numHpMod";
-            this.numHpMod.Size = new System.Drawing.Size(67, 26);
-            this.numHpMod.TabIndex = 40;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -858,6 +909,7 @@
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.spawnNumber)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -866,6 +918,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numHpMod)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.st4max)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.st4curr)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.st3max)).EndInit();
@@ -878,7 +931,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.hpcurr)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numHpMod)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -956,6 +1008,10 @@
         private System.Windows.Forms.NumericUpDown numHpMod;
         private System.Windows.Forms.Button button26;
         private System.Windows.Forms.Button button25;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button button28;
+        private System.Windows.Forms.Button button27;
+        private System.Windows.Forms.ListBox lbParties;
     }
 }
 

@@ -47,6 +47,9 @@ def SetCreatureHp(creatureId, currentHp, maxHp):
 def SetCreatureStat(creatureId, statNumber, current, max):
     return json.loads(ExecuteRemoteFunction('SetCreatureStat {0},{1},{2},{3}'.format(creatureId, statNumber, current, max)))
 
+def GetCreatureStats(creatureId):
+    return json.loads(ExecuteRemoteFunction('GetCreatureStats {0}'.format(creatureId)))
+
 def SetCustomStatName(statNumber, newName):
     return json.loads(ExecuteRemoteFunction('SetCustomStatName {0},{1}'.format(statNumber, newName)))
 

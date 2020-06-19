@@ -34,6 +34,11 @@ namespace SocketAPIGUI
             public string CreatureId { get; set; }
             public string Alias { get; set; }
         }
+        public class CustomCreatureStat
+        {
+            public float Value { get; set; }
+            public float Max { get; set; }
+        }
         public class CustomBoardAssetData
         {
             public string GUID { get; set; }
@@ -43,8 +48,15 @@ namespace SocketAPIGUI
             public string seachString { get; set; }
             public string boardAssetGroup { get; set; }
         }
-        public List<CustomBoardAssetData> creatureAssets = new List<CustomBoardAssetData>();
-        public List<CustomCreatureData> creatureList = new List<CustomCreatureData>();
+        public class Party
+        {
+            public List<string> CreatureIds { get; set; }
+            public string PartyName { get; set; }
+        }
+        public BindingList<Party> parties = new BindingList<Party>();
+
+        public BindingList<CustomBoardAssetData> creatureAssets = new BindingList<CustomBoardAssetData>();
+        public BindingList<CustomCreatureData> creatureList = new BindingList<CustomCreatureData>();
         public string SendMessage(string command, string[] msgparams)
         {
             // Data buffer for incoming data.  
@@ -123,7 +135,7 @@ namespace SocketAPIGUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            lbCreatureList.DataSource = null;
+            //lbCreatureList.DataSource = null;
             string data = SendMessage("GetCreatureList", new string[0]);
             Console.WriteLine(data);
             dynamic json = JsonConvert.DeserializeObject(data);
@@ -341,7 +353,7 @@ namespace SocketAPIGUI
 
         private void button22_Click(object sender, EventArgs e)
         {
-            lbCreatureAssets.DataSource = null;
+            //lbCreatureAssets.DataSource = null;
             string data = SendMessage("GetCreatureAssets", new string[0]);
             Console.WriteLine(data);
             dynamic json = JsonConvert.DeserializeObject(data);
@@ -417,6 +429,101 @@ namespace SocketAPIGUI
             hpcurr.Value -= numHpMod.Value;
             // set the value for the selected creature
             button7_Click(sender, e);
+        }
+
+        private void lbCreatureList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lbCreatureList.SelectedItems.Count == 1)
+            {
+                string data = SendMessage("GetCreatureStats", new string[] { ((CustomCreatureData)lbCreatureList.SelectedItem).CreatureId });
+                Console.WriteLine(data);
+                dynamic json = JsonConvert.DeserializeObject(data);
+                dynamic message = JsonConvert.DeserializeObject((string)json["Message"]);
+                int i = 0;
+                foreach (dynamic item in message)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            hpcurr.Value = (int)item["Value"];
+                            hpmax.Value = (int)item["Max"];
+                            break;
+                        case 1:
+                            st1curr.Value = (int)item["Value"];
+                            st1max.Value = (int)item["Max"];
+                            break;
+                        case 2:
+                            st2curr.Value = (int)item["Value"];
+                            st2max.Value = (int)item["Max"];
+                            break;
+                        case 3:
+                            st3curr.Value = (int)item["Value"];
+                            st3max.Value = (int)item["Max"];
+                            break;
+                        case 4:
+                            st4curr.Value = (int)item["Value"];
+                            st4max.Value = (int)item["Max"];
+                            break;
+                    }
+                    i++;
+
+                }
+            }
+            
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            if (lbCreatureList.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("You must select one or more creatures to create a new party.");
+                return;
+            }
+
+            TextDialog td = new TextDialog("Party Name", "Enter party name", "");
+            if (td.ShowDialog() == DialogResult.OK)
+            {
+
+                Party party = new Party();
+                party.PartyName = td.Answer;
+                party.CreatureIds = new List<string>();
+                foreach (CustomCreatureData ccd in lbCreatureList.SelectedItems)
+                {
+                    party.CreatureIds.Add(ccd.CreatureId);
+                }
+                parties.Add(party);
+
+                lbParties.ValueMember = "CreatureIds";
+                lbParties.DisplayMember = "PartyName";
+                lbParties.DataSource = parties;
+                lbParties.SelectedItem = party;
+            }
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+            parties.Remove((Party)lbParties.SelectedItem);
+        }
+
+        private void lbParties_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lbParties.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            lbCreatureList.SelectedItems.Clear();
+
+            List<string> creatureIds = ((Party)lbParties.SelectedItem).CreatureIds;
+            foreach (string creatureId in creatureIds)
+            {
+                foreach (CustomCreatureData ccd in creatureList)
+                {
+                    if (ccd.CreatureId == creatureId)
+                    {
+                        lbCreatureList.SelectedItems.Add(ccd);
+                    }
+                }                
+            }
         }
     }
 }

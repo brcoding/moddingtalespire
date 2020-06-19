@@ -213,3 +213,147 @@ Moves a creature a set number of steps (blocks). Important to remember that this
 #### Example Call
     This will move the creature forward by 3 steps sliding.
     ```MoveCreature ABCD-12345-123,forward,3,false```
+
+### SetCameraHeight
+
+Sets the height of the camera.
+
+#### Params:  height, absolute
+#### Returns: Error or Success Message
+#### Example Call
+    This will move the camera up by 2 units
+    ```SetCameraHeight 2,false```
+
+### RotateCamera
+
+Rotates the camera, does not account for animation and should be managed if you need smooth rotation.
+
+#### Params:  rotation, absolute
+    Rotates the camera by a Euler angle defined by rotation, if absolute it will set it directly to that euler value.
+#### Returns: Error or Success Message
+#### Example Call
+    ```RotateCamera 45,false```
+
+### ZoomCamera
+
+Zooms the camera by the amount specified.
+
+#### Params:  zoom, absolute
+#### Returns: Error or Success Message
+#### Example Call
+    ```ZoomCamera 5,false```
+
+### TiltCamera
+
+Tilts the camera by the amount specified.
+
+#### Params:  tilt, absolute
+#### Returns: Error or Success Message
+#### Example Call
+    ```TiltCamera 5,false```
+
+### SayText **DEPRECATED**
+
+This displays a bubble of text by the creature. **This is currently disabled until TaleSpire adds support back in for this feature.**
+
+#### Params:  creatureId, text
+#### Returns: Error or Success Message
+#### Example Call
+    ```SayText ABCD-1234,Arrrr, I am a pirate!```
+
+### SetCustomStatName
+
+Changes the stat name for all creatures to the new value. This change is not replicated across the network.
+
+#### Params:  index, new name
+#### Returns: Error or Success Message
+#### Example Call
+    This will set "Stat 1" to "Armor Class" on the popup rotary menu.
+    ```SetCustomStatName 1, Armor Class```
+
+### CreateSlab
+
+Creates a slab at the location requested. This is the same as pasting a slab in but at a specific location.
+
+#### Params:  x, y, z, slabtext
+#### Returns: Error or Success Message
+#### Example Call
+    ```CreateSlab 0,0,0,ABCD==```
+
+### GetSlabSize
+
+Gets a slab size to make placement of other slabs easier. It will return a float 3 with the bounds of the slab.
+
+#### Params:  x, y, z, slabtext
+#### Returns: Error or ```{"x": 10, "y": 2, "z": 5}```
+#### Example Call
+    ```GetSlabSize ABCD==```
+
+### GetCreatureAssets
+
+Gets a list of all available creature assets that can be created.
+
+#### Params:  None
+#### Returns: Error or 
+```
+{
+  "GUID": "ABCD-123",
+  "boardAssetDesc": "Description",
+  "boardAssetGroup": "Group Name",
+  "boardAssetName": "Asset Name",
+  "boardAssetType": "Asset Type",
+  "seachString": "Search String",
+}
+```
+
+#### Example Call
+    ```GetCreatureAssets```
+
+
+### AddCreature
+
+Instantiates a creature at the position provided with relevant parameters.
+
+**Note:** Should only be done with at least 300 ms between each call or things start to break
+
+#### Params:  
+  guid, 
+  x, y, z,
+  scale,
+  alias,
+  hpcurr, hpmax,
+  stat1curr, stat1max,
+  stat2curr, stat2max,
+  stat3curr, stat3max,
+  stat4curr, stat4max, 
+  torch,
+  hidden
+#### Returns: Error or Success Message
+#### Example Call
+    ```AddCreature ABCDEF-1234,10,0,10,0,"TestRat",10,10,10,10,10,10,10,10,10,10,False,False
+
+
+### KillCreature
+
+Kills the specified creature (Delete instance)
+
+#### Params:  guid, 
+
+#### Returns: Error or Success Message
+#### Example Call
+    ```KillCreature ABCDEF-1234```
+
+
+### GetCreatureStats
+
+Gets all creature stats as an array HP, Stat 1, Stat 2, Stat 3, Stat 4 with Value and Max.
+
+#### Params: CreatureID
+
+#### Returns: Array of CreatureStats
+```
+{"ErrorMessage":null,"Message":"[{\"Value\":20.0,\"Max\":20.0},{\"Value\":10.0,\"Max\":10.0},{\"Value\":10.0,\"Max\":10.0},{\"Value\":10.0,\"Max\":10.0},{\"Value\":10.0,\"Max\":10.0},{\"Value\":0.0,\"Max\":0.0}]"}
+```
+
+#### Example Call
+    ```GetCreatureStats ABCDEF-1234```

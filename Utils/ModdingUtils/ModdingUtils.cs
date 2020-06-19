@@ -95,6 +95,17 @@ namespace ModdingTales
         public string Text;
     }
 
+    public class CustomCreatureStat
+    {
+        public CustomCreatureStat(float value, float max)
+        {
+            this.Value = value;
+            this.Max = max;
+        }
+        public float Value;
+        public float Max;
+    }
+
     public struct SlabData
     {
         public F3 Position;
@@ -126,6 +137,7 @@ namespace ModdingTales
             Commands.Add("GetCreatureList", GetCreatureList);
             Commands.Add("SetCreatureHp", SetCreatureHp);
             Commands.Add("SetCreatureStat", SetCreatureStat);
+            Commands.Add("GetCreatureStats", GetCreatureStats);
             Commands.Add("PlayEmote", PlayEmote);
             Commands.Add("Knockdown", Knockdown);
             Commands.Add("SelectCreatureByCreatureId", SelectCreatureByCreatureId);
@@ -151,7 +163,7 @@ namespace ModdingTales
                 //UnityEngine.Debug.Log("Command: \"" + command + "\"");
                 var parts = command.Split(' ');
                 UnityEngine.Debug.Log(parts[0].Trim());
-                UnityEngine.Debug.Log(string.Join(" ", parts.Skip(1)).Trim().Split(','));
+                //UnityEngine.Debug.Log(string.Join(" ", parts.Skip(1)).Trim().Split(','));
                 return Commands[parts[0].Trim()].Invoke(string.Join(" ", parts.Skip(1)).Trim().Split(','));
 
             }
@@ -215,11 +227,11 @@ namespace ModdingTales
                             int bytesRec = buffer.Length;
                             data += Encoding.UTF8.GetString(buffer, 0, bytesRec);
 
-                            Debug.Log("Command received : " + data);
+                            //Debug.Log("Command received : " + data);
                             Debug.Log("Buffer Len:" + bytesRec.ToString());
 
                             byte[] cmdResult = Encoding.UTF8.GetBytes(ExecuteCommand(data));
-                            Debug.Log("Command Result:" + Encoding.UTF8.GetString(cmdResult, 0, cmdResult.Length));
+                            //Debug.Log("Command Result:" + Encoding.UTF8.GetString(cmdResult, 0, cmdResult.Length));
                             socket.Send(cmdResult);
                             
                             socket.Shutdown(SocketShutdown.Both);
@@ -850,6 +862,29 @@ namespace ModdingTales
             }
         }
 
+        private static string GetCreatureStats(string[] input)
+        {
+            return GetCreatureStats(input[0]);
+        }
+        public static string GetCreatureStats(string creatureId)
+        {
+            try
+            {
+                CreatureData cd = BoardSessionManager.Board.GetCreatureData(new NGuid(creatureId));
+                List<CustomCreatureStat> creatureStats = new List<CustomCreatureStat>();
+                creatureStats.Add(new CustomCreatureStat(cd.Hp.Value, cd.Hp.Max));
+                for (int i = 0; i < 5; i++)
+                {
+                    CreatureStat stat = cd.StatByIndex(i);
+                    creatureStats.Add(new CustomCreatureStat(stat.Value, stat.Max));
+                }
+                return new APIResponse(JsonConvert.SerializeObject(creatureStats)).ToString();
+            }
+            catch (Exception ex)
+            {
+                return new APIResponse(ex.Message + ex.StackTrace, "Could not get hp").ToString();
+            }
+        }
         private static string SetCreatureHp(string[] input)
         {
             return SetCreatureHp(input[0], input[1], input[2]);
