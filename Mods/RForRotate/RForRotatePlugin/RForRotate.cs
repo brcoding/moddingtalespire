@@ -20,7 +20,6 @@ namespace RForRotate
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
-            instance = this;
             Logger.LogInfo("In Awake for R For Rotate Plug-in");
 
             UnityEngine.Debug.Log("R For Rotate Plug-in loaded");
@@ -65,109 +64,9 @@ namespace RForRotate
                 UnityEngine.Debug.Log(ex.Source);
             }
         }
-        public static RForRotatePlugin instance;
-        private DateTime lastCheck = DateTime.Now;
-        private DateTime lastHandout = DateTime.Now;
-        private List<string> seenMessages = new List<string>();
-        private GameObject handout;
-
-        //[JsonConverter(typeof(OOBResponseConverter))]
-        public class OOBResponse
-        {
-            public string sessionid { get; set; }
-            public string type { get; set; }
-            public string handoutUrl { get; set; }
-            public string messageid { get; set; }
-            
-        }
-
-        //public Sprite sprite;
-
-        IEnumerator DownloadImage(string MediaUrl)
-        {
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
-            yield return request.SendWebRequest();
-            if (request.isNetworkError || request.isHttpError)
-                Debug.Log(request.error);
-            else
-            {
-                Debug.Log("Downloaded!");
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                float aspectRatio = ((float)texture.width / (float)texture.height);
-
-                Sprite sprite = Sprite.Create(texture,
-                new Rect(0, 0, texture.width, texture.height),
-                Vector2.one / 2);
-
-                if (handout)
-                {
-                    Destroy(handout);
-                }
-                handout = new GameObject("Handout");
-                Image image = instance.handout.AddComponent<Image>();
-                image.sprite = sprite;
-
-                lastHandout = DateTime.Now;
-                instance.handout.SetActive(true);
-
-                Canvas canvas = GUIManager.GetCanvas();
-                instance.handout.transform.SetParent(canvas.transform, false);
-
-                float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0f);
-                float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
-
-                float Scale = (float)texture.width / worldScreenWidth * 0.15f;
-
-                instance.handout.transform.localScale = new Vector3(Scale * aspectRatio, Scale, 1);
-                lastHandout = DateTime.Now;
-            }
-        }
-
-        public void CheckOOB()
-        {
-            
-            Debug.Log(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
-            OOBResponse[] json = JsonConvert.DeserializeObject<OOBResponse[]>(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
-            foreach (OOBResponse item in json)
-            {
-                if (!seenMessages.Contains(item.messageid))
-                {
-                    seenMessages.Add(item.messageid);
-                    SystemMessage.DisplayInfoText(item.handoutUrl, 2.5f);
-                    StartCoroutine(DownloadImage(item.handoutUrl));
-
-                    
-                }
-            }
-        }
 
         void Update()
         {
-            var diffInSeconds = (DateTime.Now - lastCheck).TotalSeconds;
-            if (diffInSeconds > 3)
-            {
-                lastCheck = DateTime.Now;
-                CheckOOB();
-            }
-            var diffInHandoutSeconds = (DateTime.Now - lastHandout).TotalSeconds;
-            if (handout && handout.activeSelf && diffInHandoutSeconds > 10)
-            {
-                handout.SetActive(false);
-            }
-            if (Input.GetKeyUp(KeyCode.P))
-            {
-                SystemMessage.AskForTextInput("Handout URL", "Enter the Handout URL (PNG or JPG Image Only)", "OK", delegate (string name)
-                {
-                    ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"put\", \"handoutUrl\": \"" + name + "\"}");
-                }, delegate
-                {
-                }, "Cancel", delegate
-                {
-                });
-
-                //Debug.Log("Sending OOB");
-                
-            }
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Mouse ScrollWheel") > 0)
             {
                     RotateSelected(90.0);
