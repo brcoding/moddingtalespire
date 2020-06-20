@@ -94,27 +94,11 @@ namespace RForRotate
                 Debug.Log("Downloaded!");
                 Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 float aspectRatio = ((float)texture.width / (float)texture.height);
-                Debug.Log(aspectRatio);
-                float textureHeight = (float)Screen.width * 0.8f;
-                Debug.Log(textureHeight);
-                float textureWidth = textureHeight * aspectRatio;
-                Debug.Log(textureWidth);
-                //texture.Resize((int)textureWidth, (int)textureHeight);
-                //texture.Resize(texture.width * 2, texture.height * 2);
-                Texture2D texturescaled = TextureScaler.scaled(texture, 1024, 768);// (int)textureWidth, (int)textureHeight);
-                Debug.Log("New Text");
-                Debug.Log(texturescaled.width);
-                Debug.Log(texturescaled.height);
+
                 Sprite sprite = Sprite.Create(texture,
                 new Rect(0, 0, texture.width, texture.height),
                 Vector2.one / 2);
 
-                //GameObject NewObj = new GameObject("Handout"); //Create the GameObject
-                //Image NewImage = NewObj.AddComponent<Image>(); //Add the Image Component script
-                //NewImage.sprite = sprite; //Set the Sprite of the Image Component on the new GameObject
-                //RectTransform canvas = GameObject.Find("Canvas").GetComponent<RectTransform>();
-                //NewObj.GetComponent<RectTransform>().SetParent(canvas.transform); //Assign the newly created Image GameObject as a Child of the Parent Panel.
-                //NewObj.SetActive(true); //Activate the GameObject
                 if (handout)
                 {
                     Destroy(handout);
@@ -128,31 +112,14 @@ namespace RForRotate
 
                 Canvas canvas = GUIManager.GetCanvas();
                 instance.handout.transform.SetParent(canvas.transform, false);
-                //var modifiedWScale = instance.handout.transform.localScale.x * (Screen.width / texture.width);
-                //float modifiedHScale = instance.handout.transform.localScale.x * ((float)Screen.width / (float)texture.width) * 0.8f;
-                float percentOfScreen = (float)Screen.width * 0.8f;
-                Debug.Log(percentOfScreen);
-                float percentMinumWidth = percentOfScreen - (float)texture.width;
-                Debug.Log(percentMinumWidth);
-                float XScale = (percentMinumWidth / (float)texture.width) * 2;
-                Debug.Log("XScale");
-                Debug.Log(XScale);
-                //var XScale = ((() - (float)texture.width) / (float)texture.width) * instance.handout.transform.localScale.x;
-                var YScale = (XScale / ((float)texture.width / (float)texture.height)) * 2;
-                Debug.Log("ScreenW:" + Screen.width + " Texture Height:" + texture.height + " Texture Width:" + texture.width + " XScale" + XScale);
-                Debug.Log("YScale" + YScale);
-                instance.handout.transform.localScale = new Vector3(XScale * aspectRatio, XScale, 1);
+
+                float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0f);
+                float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+
+                float Scale = (float)texture.width / worldScreenWidth * 0.15f;
+
+                instance.handout.transform.localScale = new Vector3(Scale * aspectRatio, Scale, 1);
                 lastHandout = DateTime.Now;
-                //400x480
-                //1920x768
-
-                //var percentofscreen = 1920 * 0.8f;
-                //percentofscreen = 1536;
-                //1536 - 480
-                //1056 / 480
-
-                //var XScale = ((Screen.width * 0.8f) - texture.width) / texture.width;
-                //480*2.2
             }
         }
 
@@ -189,8 +156,17 @@ namespace RForRotate
             }
             if (Input.GetKeyUp(KeyCode.P))
             {
+                SystemMessage.AskForTextInput("Handout URL", "Enter the Handout URL (PNG or JPG Image Only)", "OK", delegate (string name)
+                {
+                    ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"put\", \"handoutUrl\": \"" + name + "\"}");
+                }, delegate
+                {
+                }, "Cancel", delegate
+                {
+                });
+
                 //Debug.Log("Sending OOB");
-                ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"put\", \"somekey\": \"somevalue\"}");
+                
             }
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Mouse ScrollWheel") > 0)
             {
