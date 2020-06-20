@@ -115,6 +115,7 @@
     </Compile>
     <Compile Include="RForRotate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextureScaler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

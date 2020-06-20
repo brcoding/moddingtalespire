@@ -20,6 +20,7 @@ namespace RForRotate
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
+            instance = this;
             Logger.LogInfo("In Awake for R For Rotate Plug-in");
 
             UnityEngine.Debug.Log("R For Rotate Plug-in loaded");
@@ -64,8 +65,12 @@ namespace RForRotate
                 UnityEngine.Debug.Log(ex.Source);
             }
         }
+        public static RForRotatePlugin instance;
         private DateTime lastCheck = DateTime.Now;
+        private DateTime lastHandout = DateTime.Now;
         private List<string> seenMessages = new List<string>();
+        private GameObject handout;
+
         //[JsonConverter(typeof(OOBResponseConverter))]
         public class OOBResponse
         {
@@ -88,6 +93,18 @@ namespace RForRotate
             {
                 Debug.Log("Downloaded!");
                 Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                float aspectRatio = ((float)texture.width / (float)texture.height);
+                Debug.Log(aspectRatio);
+                float textureHeight = (float)Screen.width * 0.8f;
+                Debug.Log(textureHeight);
+                float textureWidth = textureHeight * aspectRatio;
+                Debug.Log(textureWidth);
+                //texture.Resize((int)textureWidth, (int)textureHeight);
+                //texture.Resize(texture.width * 2, texture.height * 2);
+                Texture2D texturescaled = TextureScaler.scaled(texture, 1024, 768);// (int)textureWidth, (int)textureHeight);
+                Debug.Log("New Text");
+                Debug.Log(texturescaled.width);
+                Debug.Log(texturescaled.height);
                 Sprite sprite = Sprite.Create(texture,
                 new Rect(0, 0, texture.width, texture.height),
                 Vector2.one / 2);
@@ -98,26 +115,52 @@ namespace RForRotate
                 //RectTransform canvas = GameObject.Find("Canvas").GetComponent<RectTransform>();
                 //NewObj.GetComponent<RectTransform>().SetParent(canvas.transform); //Assign the newly created Image GameObject as a Child of the Parent Panel.
                 //NewObj.SetActive(true); //Activate the GameObject
-
-                GameObject go = new GameObject("Handout");
-                Image image = go.AddComponent<Image>();
+                if (handout)
+                {
+                    Destroy(handout);
+                }
+                handout = new GameObject("Handout");
+                Image image = instance.handout.AddComponent<Image>();
                 image.sprite = sprite;
-                go.SetActive(true);
-                //Transform t = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>()[0].transform.parent.parent.parent;
-                //t.SetAsLastSibling();
-                //go.transform.SetParent(, true);
-                //Transform t = SingletonBehaviour<GUIManager>.Instance.transform;
+
+                lastHandout = DateTime.Now;
+                instance.handout.SetActive(true);
+
                 Canvas canvas = GUIManager.GetCanvas();
-                go.transform.SetParent(canvas.transform, false);
-                //go.transform.SetParent(t);
-                //go.transform.SetAsLastSibling();
+                instance.handout.transform.SetParent(canvas.transform, false);
+                //var modifiedWScale = instance.handout.transform.localScale.x * (Screen.width / texture.width);
+                //float modifiedHScale = instance.handout.transform.localScale.x * ((float)Screen.width / (float)texture.width) * 0.8f;
+                float percentOfScreen = (float)Screen.width * 0.8f;
+                Debug.Log(percentOfScreen);
+                float percentMinumWidth = percentOfScreen - (float)texture.width;
+                Debug.Log(percentMinumWidth);
+                float XScale = (percentMinumWidth / (float)texture.width) * 2;
+                Debug.Log("XScale");
+                Debug.Log(XScale);
+                //var XScale = ((() - (float)texture.width) / (float)texture.width) * instance.handout.transform.localScale.x;
+                var YScale = (XScale / ((float)texture.width / (float)texture.height)) * 2;
+                Debug.Log("ScreenW:" + Screen.width + " Texture Height:" + texture.height + " Texture Width:" + texture.width + " XScale" + XScale);
+                Debug.Log("YScale" + YScale);
+                instance.handout.transform.localScale = new Vector3(XScale * aspectRatio, XScale, 1);
+                lastHandout = DateTime.Now;
+                //400x480
+                //1920x768
+
+                //var percentofscreen = 1920 * 0.8f;
+                //percentofscreen = 1536;
+                //1536 - 480
+                //1056 / 480
+
+                //var XScale = ((Screen.width * 0.8f) - texture.width) / texture.width;
+                //480*2.2
             }
         }
 
         public void CheckOOB()
         {
-            Debug.Log(ModdingUtils.SendOOBMessage("{\"sessionid\": \"abc\", \"type\": \"get\"}"));
-            OOBResponse[] json = JsonConvert.DeserializeObject<OOBResponse[]>(ModdingUtils.SendOOBMessage("{\"sessionid\": \"abc\", \"type\": \"get\"}"));
+            
+            Debug.Log(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
+            OOBResponse[] json = JsonConvert.DeserializeObject<OOBResponse[]>(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
             foreach (OOBResponse item in json)
             {
                 if (!seenMessages.Contains(item.messageid))
@@ -139,10 +182,15 @@ namespace RForRotate
                 lastCheck = DateTime.Now;
                 CheckOOB();
             }
+            var diffInHandoutSeconds = (DateTime.Now - lastHandout).TotalSeconds;
+            if (handout && handout.activeSelf && diffInHandoutSeconds > 10)
+            {
+                handout.SetActive(false);
+            }
             if (Input.GetKeyUp(KeyCode.P))
             {
                 //Debug.Log("Sending OOB");
-                ModdingUtils.SendOOBMessage("{\"sessionid\": \"abc\", \"type\": \"put\", \"somekey\": \"somevalue\"}");
+                ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"put\", \"somekey\": \"somevalue\"}");
             }
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Mouse ScrollWheel") > 0)
             {
