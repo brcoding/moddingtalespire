@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Reflection;
 using BepInEx;
+using ModdingTales;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using UnityEngine.Networking;
+using System.Collections;
+using UnityEngine.UI;
 
 namespace RForRotate
 {
