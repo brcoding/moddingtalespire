@@ -75,7 +75,7 @@ namespace RemoveDoFPlugin
             {
                 ToggleAll();
             }
-            else if (Input.GetKeyUp(KeyCode.H))
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.H))
             {
                 ToggleDoF();
             }

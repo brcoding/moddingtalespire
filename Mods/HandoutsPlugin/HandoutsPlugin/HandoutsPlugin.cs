@@ -142,13 +142,13 @@ namespace RForRotate
             {
                 handout.SetActive(false);
             }
-            if (Input.GetKeyUp(KeyCode.M))
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyUp(KeyCode.M))
             {
                 ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"boardLoadId\": \"" + BoardSessionManager.CurrentBoardInfo.Id + "\", \"type\": \"put\"}");
                 //SwitchBoard();
             }
 
-            if (Input.GetKeyUp(KeyCode.P))
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyUp(KeyCode.P))
             {
                 SystemMessage.AskForTextInput("Handout URL", "Enter the Handout URL (PNG or JPG Image Only)", "OK", delegate (string name)
                 {
