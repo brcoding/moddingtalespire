@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI;
+using Bounce.Singletons;
 
 namespace RForRotate
 {
@@ -26,6 +27,24 @@ namespace RForRotate
             UnityEngine.Debug.Log("Handouts Plug-in loaded");
             ModdingTales.ModdingUtils.Initialize(this, Logger);
         }
+
+
+        void SwitchBoard()
+        {
+            Debug.Log("Current Board Name: " + BoardSessionManager.CurrentBoardInfo.BoardName);
+            foreach (BoardInfo bi in CampaignSessionManager.MostRecentBoardList)
+            {
+                Debug.Log("Board Item: " + bi.BoardName + " Id: " + bi.Id);
+                //if (bi.BoardName == "der")
+                //{
+                //    SingletonBehaviour<BoardSaverManager>.Instance.Load(bi);
+                //}
+
+            }
+
+        }
+
+
         
         public static HandoutsPlugin instance;
         private DateTime lastCheck = DateTime.Now;
@@ -39,6 +58,7 @@ namespace RForRotate
             public string sessionid { get; set; }
             public string type { get; set; }
             public string handoutUrl { get; set; }
+            public string boardLoadId { get; set; }
             public string messageid { get; set; }
             
         }
@@ -88,23 +108,29 @@ namespace RForRotate
         public void CheckOOB()
         {
             
-            Debug.Log(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
+            ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}");
             OOBResponse[] json = JsonConvert.DeserializeObject<OOBResponse[]>(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
             foreach (OOBResponse item in json)
             {
+                Debug.Log("Board Load ID: " + item.boardLoadId);
                 if (!seenMessages.Contains(item.messageid))
                 {
                     seenMessages.Add(item.messageid);
+                    if (item.boardLoadId != null)
+                    {
+                        Debug.Log("Got OOB Board load.");
+                        Debug.Log(ModdingUtils.LoadBoard(item.boardLoadId));
+                        continue;
+                    }
                     SystemMessage.DisplayInfoText(item.handoutUrl, 2.5f);
                     StartCoroutine(DownloadImage(item.handoutUrl));
-
-                    
                 }
             }
         }
 
         void Update()
         {
+            ModdingUtils.OnUpdate();
             var diffInSeconds = (DateTime.Now - lastCheck).TotalSeconds;
             if (diffInSeconds > 3)
             {
@@ -116,6 +142,12 @@ namespace RForRotate
             {
                 handout.SetActive(false);
             }
+            if (Input.GetKeyUp(KeyCode.M))
+            {
+                ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"boardLoadId\": \"" + BoardSessionManager.CurrentBoardInfo.Id + "\", \"type\": \"put\"}");
+                //SwitchBoard();
+            }
+
             if (Input.GetKeyUp(KeyCode.P))
             {
                 SystemMessage.AskForTextInput("Handout URL", "Enter the Handout URL (PNG or JPG Image Only)", "OK", delegate (string name)
