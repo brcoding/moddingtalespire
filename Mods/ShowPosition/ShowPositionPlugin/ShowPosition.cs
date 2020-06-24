@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace ShowPosition
 {
-    [BepInPlugin("org.d20armyknife.plugins.showposition", "Show Position Plug-In", "1.2.2.0")]
+    [BepInPlugin("org.d20armyknife.plugins.showposition", "Show Position Plug-In", "1.3.0.0")]
     public class ShowPositionPlugin: BaseUnityPlugin
     {
         private ConfigEntry<bool> RulerEnabled { get; set; }
