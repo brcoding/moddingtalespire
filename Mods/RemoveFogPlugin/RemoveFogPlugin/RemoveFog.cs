@@ -32,7 +32,7 @@ namespace RemoveFogPlugin
         
         void Update()
         {
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyUp(KeyCode.G))
+            if (FogKey.Value.IsUp())
             {
                 ToggleFog();
             }
