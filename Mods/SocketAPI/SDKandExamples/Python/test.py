@@ -113,6 +113,11 @@ def spiralCreature(m, n, a, height) :
   
 
 def main():
+    print(GetBoards())
+    print(GetCurrentBoard())
+    #print(LoadBoard("eba90dd1-d4a6-4947-a179-0649874cdb93"))
+    print(LoadBoard("61dbed3a-b231-4e18-b692-979f538079be"))
+    return
     # print(GetCreatureAssets())
     # # create giant rat
     # print(AddCreature("d8c8a8e0-c452-48ad-9ecd-aba5e54cf235", 0, 0.5, 0, 0, "Test Rat", 10, 10, 10, 10,

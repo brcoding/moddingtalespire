@@ -17,8 +17,6 @@ def ExecuteRemoteFunction(command):
             break
 
     return data
-    #return s.recv(44576).decode('utf-8')
-    #s.close()
 
 # Retrieves all creatures on the current board
 def GetCreatureList():
@@ -99,49 +97,16 @@ def AddCreature(nguid, x, y, z, scale, alias, hpcurr, hpmax, stat1curr, stat1max
 def KillCreature(creatureId):
     return json.loads(ExecuteRemoteFunction('KillCreature {0}'.format(creatureId)))
 
+def GetBoards():
+    return json.loads(ExecuteRemoteFunction('GetBoards'))
+
+def GetCurrentBoard():
+    return json.loads(ExecuteRemoteFunction('GetCurrentBoard'))
+
+def LoadBoard(boardId):
+    return json.loads(ExecuteRemoteFunction('LoadBoard {0}'.format(boardId)))
+
 def GetCreatureIdByAlias(alias):
     for creature in GetCreatureList():
         if creature['Alias'].lower() == alias.lower():
             return creature['CreatureId']
-
-# SetCameraHeight(-3, False)
-# sleep(0.5)
-# SetCameraHeight(1, False)
-# sleep(0.2)
-# SetCameraHeight(1, False)
-# sleep(0.2)
-# SetCameraHeight(1, False)
-# sleep(0.4)
-# SetCameraHeight(0, True)
-# print(MoveCamera(0, 10, 0, 0, False))
-# creature_id = GetCreatureIdByAlias("Doober")
-# MoveCreature(creature_id, "Forward", 3);
-# MoveCreature(creature_id, "left", 1);
-# MoveCreature(creature_id, "FORWARD", 3);
-# sleep(0.4)
-# creature_id = GetCreatureIdByAlias("Barf")
-# MoveCreature(creature_id, "FORWARD", 3);
-# MoveCreature(creature_id, "left", 1);
-# MoveCreature(creature_id, "FORWARD", 3);
-
-# SelectNextPlayerControlled()
-# sleep(0.5)
-# SelectNextPlayerControlled()
-# sleep(0.5)
-# SelectNextPlayerControlled()
-#TLA_Twirl,TLA_Action_Knockdown,TLA_Wiggle,TLA_MeleeAttack
-# PlayEmote(creature_id, "TLA_Action_Knockdown")
-# sleep(2)
-# PlayEmote(creature_id, "TLA_MeleeAttack")
-# sleep(2)
-# PlayEmote(creature_id, "TLA_Twirl")
-# sleep(2)
-# PlayEmote(creature_id, "TLA_Wiggle")
-
-# Knockdown(creature_id)
-
-# SetCreatureHp(creature_id, 40, 100)
-# SetCreatureStat(creature_id, 1, 11, 101)
-# SetCreatureStat(creature_id, 2, 22, 102)
-# SetCreatureStat(creature_id, 3, 33, 103)
-# SetCreatureStat(creature_id, 4, 44, 104)

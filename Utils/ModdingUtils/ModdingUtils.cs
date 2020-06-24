@@ -116,6 +116,7 @@ namespace ModdingTales
         private static BaseUnityPlugin parentPlugin;
         private static ManualLogSource parentLogger;
         private static bool serverStarted = false;
+        private static Queue<BoardInfo> boardsToLoad = new Queue<BoardInfo>();
         //private static bool movingCreature = false;
         //private static Queue<MoveAction> moveQueue = new Queue<MoveAction>();
         //public delegate string Command(params string[] args);
@@ -127,7 +128,7 @@ namespace ModdingTales
         public static string slabSizeSlab = "";
         public static bool slabSizeResponse;
         public static float3 slabSize;
-        public static Copied beingCopied;        
+        public static Copied beingCopied;
 
         static ModdingUtils()
         {
@@ -155,6 +156,9 @@ namespace ModdingTales
             Commands.Add("GetCreatureAssets", GetCreatureAssets);
             Commands.Add("AddCreature", AddCreature);
             Commands.Add("KillCreature", KillCreature);
+            Commands.Add("GetBoards", GetBoards);
+            Commands.Add("GetCurrentBoard", GetCurrentBoard);
+            Commands.Add("LoadBoard", LoadBoard);
         }
         static string ExecuteCommand(string command)
         {
@@ -228,7 +232,7 @@ namespace ModdingTales
                             data += Encoding.UTF8.GetString(buffer, 0, bytesRec);
 
                             //Debug.Log("Command received : " + data);
-                            Debug.Log("Buffer Len:" + bytesRec.ToString());
+                            //Debug.Log("Buffer Len:" + bytesRec.ToString());
 
                             byte[] cmdResult = Encoding.UTF8.GetBytes(ExecuteCommand(data));
                             //Debug.Log("Command Result:" + Encoding.UTF8.GetString(cmdResult, 0, cmdResult.Length));
@@ -304,6 +308,13 @@ namespace ModdingTales
             public bool ExplicitlyHidden;
         }
 
+        public struct CustomBoardInfo
+        {
+            public string BoardId;
+            public string BoardName;
+            public string CampaignId;
+            public string BoardDesc;
+        }
         private static CustomCreatureData convertCreatureData(CreatureData cd)
         {
             // This is because NGuid does not serialize nicely
@@ -329,6 +340,62 @@ namespace ModdingTales
             return ccd;
         }
 
+        
+        private static string GetCurrentBoard(string[] input)
+        {
+            return GetCurrentBoard();
+        }
+
+        public static string GetCurrentBoard()
+        {
+            return JsonConvert.SerializeObject(new CustomBoardInfo
+            {
+                BoardId = BoardSessionManager.CurrentBoardInfo.Id.ToString(),
+                BoardName = BoardSessionManager.CurrentBoardInfo.BoardName,
+                BoardDesc = BoardSessionManager.CurrentBoardInfo.Description,
+                CampaignId = BoardSessionManager.CurrentBoardInfo.CampaignId.ToString()
+            });
+        }
+
+        private static string LoadBoard(string[] input)
+        {
+            return LoadBoard(input[0]);
+        }
+
+        public static string LoadBoard(string boardId)
+        {
+            foreach (BoardInfo bi in CampaignSessionManager.MostRecentBoardList)
+            {
+                if (bi.Id.ToString() == boardId)
+                {
+                    boardsToLoad.Enqueue(bi);
+                    return new APIResponse("Board load queued successfully").ToString();
+                }
+            }
+            return new APIResponse("Board not found").ToString();
+        }
+
+        private static string GetBoards(string[] input)
+        {
+            return GetBoards();
+        }
+
+        public static string GetBoards()
+        {
+            //Debug.Log("Current Board Name: " + BoardSessionManager.CurrentBoardInfo.BoardName);
+            List<CustomBoardInfo> lbi = new List<CustomBoardInfo>();
+            foreach (BoardInfo bi in CampaignSessionManager.MostRecentBoardList)
+            {
+                lbi.Add(new CustomBoardInfo
+                {
+                    BoardId = BoardSessionManager.CurrentBoardInfo.Id.ToString(),
+                    BoardName = BoardSessionManager.CurrentBoardInfo.BoardName,
+                    BoardDesc = BoardSessionManager.CurrentBoardInfo.Description,
+                    CampaignId = BoardSessionManager.CurrentBoardInfo.CampaignId.ToString()
+                });
+            }
+            return JsonConvert.SerializeObject(lbi);
+        }
 
         private static string GetSlabSize(string[] input)
         {
@@ -403,7 +470,7 @@ namespace ModdingTales
             {
                 Creature creature = creatureBoardAsset.Creature;
                 creature.BoardAsset.RequestDelete();
-                return new APIResponse("Delete request successful").ToString(); ;
+                return new APIResponse("Delete request successful").ToString();
             }
             else
             {
@@ -794,7 +861,14 @@ namespace ModdingTales
                 }
             }
         }
-
+        private static void UpdateBoardLoad()
+        {
+            if (boardsToLoad.Count > 0)
+            {
+                BoardInfo bi = boardsToLoad.Dequeue();
+                SingletonBehaviour<BoardSaverManager>.Instance.Load(bi);
+            }
+        }
         // This only needs to be called from update if you are using the socket API or MoveCharacter calls.
         public static void OnUpdate()
         {
@@ -809,6 +883,7 @@ namespace ModdingTales
             UpdateCustomStatNames();
             UpdateSlab();
             GetSlabSize();
+            UpdateBoardLoad();
         }
         private static string MoveCreature(string creatureId, string direction, string steps, string carryCreature)
         {

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
@@ -13,12 +14,18 @@ namespace RemoveDoFPlugin
     [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.2.1.0")]
     public class DeDoFIt: BaseUnityPlugin
     {
+        private ConfigEntry<KeyboardShortcut> ToggleDOF { get; set; }
+        private ConfigEntry<KeyboardShortcut> ToggleLayer { get; set; }
 
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
             Logger.LogInfo("In Awake for DepthofField Plug-in");
             UnityEngine.Debug.Log("Remove Depth of Field Plug-in loaded");
+
+            ToggleDOF = Config.Bind("Hotkeys", "Depth of Field Shortcut", new KeyboardShortcut(KeyCode.D, KeyCode.LeftControl));
+            ToggleLayer = Config.Bind("Hotkeys", "Disable All PostProcessLayers Shortcut", new KeyboardShortcut(KeyCode.H, KeyCode.LeftControl));
+
             ModdingTales.ModdingUtils.Initialize(this, this.Logger);
         }
 
@@ -71,11 +78,11 @@ namespace RemoveDoFPlugin
         
         void Update()
         {
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyUp(KeyCode.H))
+            if (ToggleLayer.Value.IsUp())
             {
                 ToggleAll();
             }
-            else if (Input.GetKeyUp(KeyCode.H))
+            else if (ToggleDOF.Value.IsUp())
             {
                 ToggleDoF();
             }
