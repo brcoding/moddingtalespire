@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace RemoveDoFPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.2.1.0")]
+    [BepInPlugin("org.d20armyknife.plugins.removedof", "Remove Depth Of Field Plug-In", "1.3.0.0")]
     public class DeDoFIt: BaseUnityPlugin
     {
         private ConfigEntry<KeyboardShortcut> ToggleDOF { get; set; }

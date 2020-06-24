@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace RemoveFogPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.removefog", "Remove Fog Plug-In", "1.1.2.0")]
+    [BepInPlugin("org.d20armyknife.plugins.removefog", "Remove Fog Plug-In", "1.2.0.0")]
     public class DefogIt: BaseUnityPlugin
     {
         private ConfigEntry<KeyboardShortcut> FogKey { get; set; }

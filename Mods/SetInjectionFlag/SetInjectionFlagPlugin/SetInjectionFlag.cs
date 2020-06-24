@@ -3,7 +3,7 @@ using ModdingTales;
 
 namespace PluginUtilities
 {
-    [BepInPlugin("org.generic.plugins.setinjectionflag", "Set Injection Flag Plugin", "1.1.1.0")]
+    [BepInPlugin("org.generic.plugins.setinjectionflag", "Set Injection Flag Plugin", "1.2.0.0")]
     class SetInjectionFlag : BaseUnityPlugin
     {
         void Awake()

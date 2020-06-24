@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace HandoutsPlugin
 {
-    [BepInPlugin("org.d20armyknife.plugins.handouts", "Handouts Plug-In", "1.0.0.0")]
+    [BepInPlugin("org.d20armyknife.plugins.handouts", "Handouts Plug-In", "2.0.0.0")]
     public class HandoutsPlugin: BaseUnityPlugin
     {
         // Configuration
