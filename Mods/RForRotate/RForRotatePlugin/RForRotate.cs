@@ -10,19 +10,21 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI;
+using BepInEx.Configuration;
 
 namespace RForRotate
 {
     [BepInPlugin("org.d20armyknife.plugins.rforrotate", "Press R to Rotate Plug-In", "1.1.2.0")]
     public class RForRotatePlugin: BaseUnityPlugin
     {
-
+        private ConfigEntry<KeyboardShortcut> RotateKey { get; set; }
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
             Logger.LogInfo("In Awake for R For Rotate Plug-in");
 
             UnityEngine.Debug.Log("R For Rotate Plug-in loaded");
+            RotateKey = Config.Bind("Hotkeys", "Rotate Shortcut", new KeyboardShortcut(KeyCode.R));
             ModdingTales.ModdingUtils.Initialize(this, Logger);
         }
         
@@ -75,7 +77,7 @@ namespace RForRotate
             {
                 RotateSelected(-90.0);
             }
-            if (Input.GetKeyUp(KeyCode.R))
+            if (RotateKey.Value.IsUp())
             {
                 RotateSelected(90.0);
             }

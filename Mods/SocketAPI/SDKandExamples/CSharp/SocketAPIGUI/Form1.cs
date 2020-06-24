@@ -386,7 +386,7 @@ namespace SocketAPIGUI
                     {
                         z++;
                     }
-                    System.Threading.Thread.Sleep(300);
+                    System.Threading.Thread.Sleep(400);
                 }
                 x++;
             }

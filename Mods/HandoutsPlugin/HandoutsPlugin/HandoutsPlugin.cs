@@ -11,40 +11,48 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI;
 using Bounce.Singletons;
+using Bounce.Unmanaged;
+using DataModel;
+using BepInEx.Configuration;
+using Unity.Mathematics;
+using System.Linq;
 
-namespace RForRotate
+namespace HandoutsPlugin
 {
     [BepInPlugin("org.d20armyknife.plugins.handouts", "Handouts Plug-In", "1.0.0.0")]
     public class HandoutsPlugin: BaseUnityPlugin
     {
+        // Configuration
+        private ConfigEntry<KeyboardShortcut> ShowHandout { get; set; }
+        private ConfigEntry<KeyboardShortcut> BringPlayersToMe { get; set; }
+        private AcceptableValueList<String> lineOfSiteFocusAlias { get; set; }
+        private ConfigEntry<string> lineLater { get; set; }
+        private ConfigEntry<bool> DistanceLOS { get; set; }
+        private ConfigEntry<float> LOSDistance { get; set; }
+
+        public HandoutsPlugin()
+        {
+
+        }
 
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
+            DistanceLOS = Config.Bind("Line of Sight", "Custom Line of Sight", false);
+            LOSDistance = Config.Bind("Line of Sight", "Distance", 10.0f);
+            lineOfSiteFocusAlias = new AcceptableValueList<String>(new String[] { "Not Set" });
+            lineLater = Config.Bind("Line of Sight", "Focused Character", "Not Set", new ConfigDescription("Select the alias to focus on. If not set all characters are in line of sight.", lineOfSiteFocusAlias));
+            //lineLater = Config.Bind("test", "test", "Test", new ConfigDescription("Description", lineOfSiteFocusAlias));
+
+            ShowHandout = Config.Bind("Hotkeys", "Handout Shortcut", new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl));
+            BringPlayersToMe = Config.Bind("Hotkeys", "Bring Players to my Board Shortcut", new KeyboardShortcut(KeyCode.M, KeyCode.LeftControl));
+
             instance = this;
             Logger.LogInfo("In Awake for Handouts Plug-in");
 
             UnityEngine.Debug.Log("Handouts Plug-in loaded");
             ModdingTales.ModdingUtils.Initialize(this, Logger);
         }
-
-
-        void SwitchBoard()
-        {
-            Debug.Log("Current Board Name: " + BoardSessionManager.CurrentBoardInfo.BoardName);
-            foreach (BoardInfo bi in CampaignSessionManager.MostRecentBoardList)
-            {
-                Debug.Log("Board Item: " + bi.BoardName + " Id: " + bi.Id);
-                //if (bi.BoardName == "der")
-                //{
-                //    SingletonBehaviour<BoardSaverManager>.Instance.Load(bi);
-                //}
-
-            }
-
-        }
-
-
         
         public static HandoutsPlugin instance;
         private DateTime lastCheck = DateTime.Now;
@@ -130,6 +138,38 @@ namespace RForRotate
 
         void Update()
         {
+            var board = BoardSessionManager.Board;
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+            //Debug.Log("LOS Enabled: " + DistanceLOS.Value);
+            if (board != null && DistanceLOS.Value)
+            {
+                Dictionary<NGuid, CreatureData> creatures = (Dictionary<NGuid, CreatureData>)board.GetType().GetField("_creatures", flags).GetValue(board);
+                foreach (KeyValuePair<NGuid, CreatureData> focusCreature in creatures)
+                {
+                    if (focusCreature.Value.Alias == lineLater.Value)
+                    {
+                        //Debug.Log("Found Focus");
+                        foreach (KeyValuePair<NGuid, CreatureData> entry in creatures)
+                        {
+                            CreatureBoardAsset creatureBoardAsset;
+                            if (PhotonSimpleSingletonBehaviour<CreatureManager>.Instance.TryGetAsset(entry.Value.CreatureId, out creatureBoardAsset))
+                            {
+
+                                float distance = Vector3.Distance(entry.Value.Position, focusCreature.Value.Position);
+                                //Debug.Log("Distance: " + distance + " Alias: " + entry.Value.Alias + "Pos: " + entry.Value.Position + " FCPos: " + focusCreature.Value.Position);
+                                if (distance < LOSDistance.Value)
+                                {
+                                    creatureBoardAsset.InLineOfSight = true;
+                                }
+                                else
+                                {
+                                    creatureBoardAsset.InLineOfSight = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             ModdingUtils.OnUpdate();
             var diffInSeconds = (DateTime.Now - lastCheck).TotalSeconds;
             if (diffInSeconds > 3)
@@ -142,13 +182,33 @@ namespace RForRotate
             {
                 handout.SetActive(false);
             }
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyUp(KeyCode.M))
+
+            if (board != null)
             {
-                ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"boardLoadId\": \"" + BoardSessionManager.CurrentBoardInfo.Id + "\", \"type\": \"put\"}");
-                //SwitchBoard();
+                //Debug.Log("onboard");
+                Dictionary<NGuid, CreatureData> creatures = (Dictionary<NGuid, CreatureData>)board.GetType().GetField("_creatures", flags).GetValue(board);
+                if (creatures.Count + 1 != lineOfSiteFocusAlias.AcceptableValues.Length && creatures.Count > 0)
+                {
+                    List<string> charAliases = new List<string>();
+                    charAliases.Add("Not Set");
+                    foreach (KeyValuePair<NGuid, CreatureData> focusCreature in creatures)
+                    {
+                        charAliases.Add(focusCreature.Value.Alias);
+                    }
+                    string tmpVal = lineLater.Value;
+                    Config.Remove(lineLater.Definition);
+                    lineOfSiteFocusAlias = new AcceptableValueList<String>(charAliases.ToArray());
+                    lineLater = Config.Bind("Line of Sight", "Focused Character", "Not Set", new ConfigDescription("Select the alias to focus on. If not set all characters are in line of sight.", lineOfSiteFocusAlias));
+                    lineLater.Value = tmpVal;
+                }
             }
 
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyUp(KeyCode.P))
+            if (BringPlayersToMe.Value.IsUp())
+            {
+                PartyManager.SummonAllOnlinePlayersToThisBoard(true, CameraController.Position);
+            }
+
+            if (ShowHandout.Value.IsUp())
             {
                 SystemMessage.AskForTextInput("Handout URL", "Enter the Handout URL (PNG or JPG Image Only)", "OK", delegate (string name)
                 {
