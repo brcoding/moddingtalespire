@@ -21,9 +21,9 @@ namespace ShowPosition
             Logger.LogInfo("In Awake for ShowPosition Plug-in");
 
             UnityEngine.Debug.Log("Show Position Plug-in loaded");
-            RulerEnabled = Config.Bind("Show Position", "Ruler enabled", false);
+            RulerEnabled = Config.Bind("Show Position", "Ruler enabled", true);
             RulerFontSize = Config.Bind("Show Position", "Ruler Font Size", 24f);
-            ShowPosition = Config.Bind("Show Position", "Show Position enabled", false);
+            ShowPosition = Config.Bind("Show Position", "Show Position enabled", true);
 
             ModdingTales.ModdingUtils.Initialize(this, this.Logger);
         }
