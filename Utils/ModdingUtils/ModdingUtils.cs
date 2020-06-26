@@ -254,7 +254,7 @@ namespace ModdingTales
         }
 
 
-        public static string SendOOBMessage(string message)
+        public static string SendOOBMessage(string message, AsyncCallback callback = null)
         {
             int port = 887;
 
@@ -263,14 +263,22 @@ namespace ModdingTales
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(localEndPoint);
             byte[] byteData = Encoding.UTF8.GetBytes(message);
-            socket.Send(byteData);
-            byte[] buffer = ReceiveAll(socket);
-            int bytesRec = buffer.Length;
-            string data = Encoding.UTF8.GetString(buffer, 0, bytesRec);
+            if (callback != null)
+            {
+                socket.BeginSend(byteData, 0, byteData.Length, 0,
+                    new AsyncCallback(callback), socket);
+                return "";
+            } else
+            {
+                socket.Send(byteData);
+                byte[] buffer = ReceiveAll(socket);
+                int bytesRec = buffer.Length;
+                string data = Encoding.UTF8.GetString(buffer, 0, bytesRec);
 
-            //Debug.Log("OOB Response: " + data);
-            //Debug.Log("Buffer Len:" + bytesRec.ToString());
-            return data;
+                //Debug.Log("OOB Response: " + data);
+                //Debug.Log("Buffer Len:" + bytesRec.ToString());
+                return data;
+            }
         }
 
         private static string GetPlayerControlledList(string[] input)

@@ -16,6 +16,8 @@ using DataModel;
 using BepInEx.Configuration;
 using Unity.Mathematics;
 using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 
 namespace HandoutsPlugin
 {
@@ -115,10 +117,7 @@ namespace HandoutsPlugin
 
         public void CheckOOB()
         {
-            
-            ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}");
-            OOBResponse[] json = JsonConvert.DeserializeObject<OOBResponse[]>(ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}"));
-            foreach (OOBResponse item in json)
+            foreach (OOBResponse item in oobJson)
             {
                 Debug.Log("Board Load ID: " + item.boardLoadId);
                 if (!seenMessages.Contains(item.messageid))
@@ -134,7 +133,38 @@ namespace HandoutsPlugin
                     StartCoroutine(DownloadImage(item.handoutUrl));
                 }
             }
+            oobJson = new OOBResponse[] { };
+            //ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}", SendCallback);
+            ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"get\"}", SendCallback);
+            
         }
+
+        private OOBResponse[] oobJson = new OOBResponse[] { };
+
+        private void SendCallback(IAsyncResult ar)
+        {
+            try
+            {
+                Socket socket = (Socket)ar.AsyncState;
+                // Complete sending the data to the remote device.  
+                int bytesSent = socket.EndSend(ar);
+                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+
+                byte[] buffer = ModdingUtils.ReceiveAll(socket);
+                int bytesRec = buffer.Length;
+                string data = Encoding.UTF8.GetString(buffer, 0, bytesRec);
+                oobJson = JsonConvert.DeserializeObject<OOBResponse[]>(data);
+
+                // Retrieve the socket from the state object.  
+                Socket client = (Socket)ar.AsyncState;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
 
         void Update()
         {
@@ -212,7 +242,7 @@ namespace HandoutsPlugin
             {
                 SystemMessage.AskForTextInput("Handout URL", "Enter the Handout URL (PNG or JPG Image Only)", "OK", delegate (string name)
                 {
-                    ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"put\", \"handoutUrl\": \"" + name + "\"}");
+                    ModdingUtils.SendOOBMessage("{\"sessionid\": \"" + CampaignSessionManager.Info.CampaignId + "\", \"type\": \"put\", \"handoutUrl\": \"" + name + "\"}", null);
                 }, delegate
                 {
                 }, "Cancel", delegate
